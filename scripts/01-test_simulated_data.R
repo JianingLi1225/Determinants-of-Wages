@@ -74,8 +74,7 @@ test_that("Value ranges and logical consistency", {
   expect_true(all(simulated_data$region %in% valid_regions), "Invalid values found in region.")
   
   # Test 16: education_level contains valid categories
-  valid_education <- c("No_Education", "Primary_Education", "Middle_School", 
-                       "High_School", "Some_College", "Bachelors_or_Higher")
+  valid_education <- c("Below_High_School", "High_School", "Some_College", "Bachelor", "Above_Bachelor")
   expect_true(all(simulated_data$education_level %in% valid_education), "Invalid values found in education_level.")
   
   # Test 17: gender contains valid categories
@@ -83,11 +82,10 @@ test_that("Value ranges and logical consistency", {
   expect_true(all(simulated_data$gender %in% valid_genders), "Invalid values found in gender.")
   
   # Test 18: race_group contains valid categories
-  valid_race_groups <- c("White", "Black", "Asian", "Native", "Mixed_Other")
+  valid_race_groups <- c("White", "Black", "Asian", "Other")
   expect_true(all(simulated_data$race_group %in% valid_race_groups), "Invalid values found in race_group.")
 })
 
-  
 
 
 

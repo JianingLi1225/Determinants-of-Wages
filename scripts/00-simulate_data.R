@@ -29,27 +29,27 @@ region <- sample(c("Northeast", "South", "Midwest", "West"), n_samples, replace 
 
 # Simulate detailed education levels
 education_level <- sample(
-  c("No_Education", "Primary_Education", "Middle_School", "High_School", 
-    "Some_College", "Bachelors_or_Higher"),
+  c("Below_High_School", "High_School", "Some_College", "Bachelor", "Above_Bachelor"),
   n_samples, 
   replace = TRUE, 
-  prob = c(0.05, 0.1, 0.15, 0.4, 0.2, 0.1)
+  prob = c(0.25, 0.4, 0.2, 0.1, 0.05)
 )
 
 # Simulate working hours based on education level
 uhrswork <- rnorm(n_samples, mean = 40, sd = 5)
-uhrswork[education_level == "No_Education"] <- rnorm(sum(education_level == "No_Education"), mean = 25, sd = 5)
-uhrswork[education_level == "Primary_Education"] <- rnorm(sum(education_level == "Primary_Education"), mean = 30, sd = 5)
-uhrswork[education_level == "Middle_School"] <- rnorm(sum(education_level == "Middle_School"), mean = 35, sd = 5)
+uhrswork[education_level == "Below_High_School"] <- rnorm(sum(education_level == "Below_High_School"), mean = 30, sd = 5)
+uhrswork[education_level == "High_School"] <- rnorm(sum(education_level == "High_School"), mean = 35, sd = 5)
+uhrswork[education_level == "Some_College"] <- rnorm(sum(education_level == "Some_College"), mean = 38, sd = 5)
+uhrswork[education_level == "Bachelor"] <- rnorm(sum(education_level == "Bachelor"), mean = 42, sd = 5)
+uhrswork[education_level == "Above_Bachelor"] <- rnorm(sum(education_level == "Above_Bachelor"), mean = 45, sd = 5)
 
 # Simulate income based on education, region, and gender with interaction effects
 education_to_income <- c(
-  "No_Education" = 15000,
-  "Primary_Education" = 20000,
-  "Middle_School" = 25000,
+  "Below_High_School" = 20000,
   "High_School" = 35000,
   "Some_College" = 45000,
-  "Bachelors_or_Higher" = 65000
+  "Bachelor" = 60000,
+  "Above_Bachelor" = 80000
 )
 base_income <- as.numeric(education_to_income[education_level])
 region_factor <- ifelse(region == "Northeast", 1.1, ifelse(region == "South", 0.9, 1.0))
@@ -58,11 +58,7 @@ random_noise <- rnorm(n_samples, mean = 0, sd = 5000)
 incwage <- base_income * region_factor * gender_factor + random_noise
 
 # Simulate expanded race categories with regional correlation
-race_group <- ifelse(
-  region %in% c("Northeast", "Midwest"),
-  sample(c("White", "Black", "Asian", "Native", "Mixed_Other"), n_samples, replace = TRUE, prob = c(0.7, 0.15, 0.05, 0.05, 0.05)),
-  sample(c("White", "Black", "Asian", "Native", "Mixed_Other"), n_samples, replace = TRUE, prob = c(0.5, 0.3, 0.1, 0.05, 0.05))
-)
+race_group <- sample(c("Asian", "Black", "Other", "White"), n_samples, replace = TRUE, prob = c(0.2, 0.2, 0.2, 0.4))
 
 # Combine into a data frame
 simulated_data <- data.frame(
@@ -82,13 +78,12 @@ cleaned_data <- simulated_data %>%
   filter(INCWAGE > 0) %>%  # Remove invalid wages
   mutate(
     region = factor(region),
-    education_level = factor(education_level, levels = c("No_Education", "Primary_Education", "Middle_School", 
-                                                         "High_School", "Some_College", "Bachelors_or_Higher")),
+    education_level = factor(education_level, levels = c("Below_High_School", "High_School", "Some_College", 
+                                                         "Bachelor", "Above_Bachelor")),
     gender = factor(gender),
-    race_group = factor(race_group, levels = c("White", "Black", "Asian", "Native", "Mixed_Other"))
+    race_group = factor(race_group, levels = c("Asian", "Black", "Other", "White"))
   )
 
 
 #### Save data ####
 write_csv(cleaned_data, here("data", "00-simulated_data", "simulated_data.csv"))
-

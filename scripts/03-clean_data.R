@@ -35,12 +35,11 @@ cleaned_data <- raw_data %>%
   filter(!is.na(region)) %>%
   filter(!EDUC %in% c(0, 99)) %>%  # Remove invalid education values
   mutate(education_level = case_when(
-    EDUC == 1 ~ "No_Education",
-    EDUC == 2 ~ "Primary_Education",
-    EDUC == 3 ~ "Middle_School",
-    EDUC %in% c(4, 5, 6) ~ "High_School",
-    EDUC %in% c(7, 8, 9) ~ "Some_College",
-    EDUC %in% c(10, 11) ~ "Bachelors_or_Higher"
+    EDUC %in% c(0, 1, 2, 3, 4, 5) ~ "Below_High_School",  
+    EDUC == 6 ~ "High_School",  
+    EDUC %in% c(7, 8) ~ "Some_College",  
+    EDUC == 10 ~ "Bachelor",  
+    EDUC == 11 ~ "Above_Bachelor"  
   )) %>%
   mutate(age = ifelse(AGE == 999, NA, AGE)) %>%  # Replace 999 with NA
   filter(!is.na(age) & age >= 18 & age <= 65) %>%  # Keep working age (18-65)
@@ -54,9 +53,8 @@ cleaned_data <- raw_data %>%
   mutate(race_group = case_when(
     RACE == 1 ~ "White",
     RACE == 2 ~ "Black",
-    RACE == 3 ~ "Native",
-    RACE %in% c(4, 5, 6) ~ "Asian",
-    RACE %in% c(7, 8, 9) ~ "Mixed_Other"
+    RACE %in% c(3, 7, 8, 9) ~ "Other",  
+    RACE %in% c(4, 5, 6) ~ "Asian"
   )) %>%
   filter(EMPSTAT == 1) %>%  # Keep only employed individuals
   select(-STATEFIP, -RACE, -EDUC, -EMPSTAT, -SEX, -AGE)

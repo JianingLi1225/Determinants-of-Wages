@@ -19,9 +19,14 @@ bibliography: references.bib
 #| message: false
 
 library(tidyverse)
-library(palmerpenguins)
+library(ggplot2)
+library(dplyr)
+library(here)
 ```
 
+```{r}
+data <- read_csv(here("data", "01-analysis_data", "analysis_data.csv"))
+```
 
 # Introduction
 
@@ -58,44 +63,174 @@ Add graphs, tables and text. Use sub-sub-headings for each outcome variable or u
 
 
 
-Some of our data is of penguins (@fig-bills), from @palmerpenguins.
+
+
+
 
 ```{r}
-#| label: fig-bills
-#| fig-cap: Bills of penguins
-#| echo: false
 
-ggplot(penguins, aes(x = island, fill = species)) +
-  geom_bar(alpha = 0.8) +
-  scale_fill_manual(values = c("darkorange","purple","cyan4"),
-                    guide = "none") +
-  theme_minimal() +
-  facet_wrap(~species, ncol = 1) +
-  coord_flip()
-```
-
-Talk more about it.
-
-And also planes (@fig-planes). (You can change the height and width, but don't worry about doing that until you have finished every other aspect of the paper - Quarto will try to make it look nice and the defaults usually work well once you have enough text.)
-
-```{r}
-#| label: fig-planes
-#| fig-cap: Relationship between wing length and width
-#| echo: false
-#| warning: false
-#| message: false
-
-analysis_data <- read_csv(here::here("data/02-analysis_data/analysis_data.csv"))
-
-analysis_data |> 
-  ggplot(aes(x = width, y = length)) +
-  geom_point(alpha = 0.8) +
-  theme_minimal() +
-  labs(x = "Wing width (mm)",
-       y = "Wing length (mm)")
 ```
 
 Talk way more about it. 
+
+
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| label: fig-demographics-distribution
+#| fig-cap: "Demographics Distribution and Average Income by Group"
+#| fig-subcap: [
+#| "Gender Proportion", "Average Income by Gender", 
+#| "Race Proportion", "Average Income by Race", 
+#| "Region Proportion", "Average Income by Region", 
+#| "Education Proportion", "Average Income by Education Level"
+#| ]
+#| layout-ncol: 2
+
+# Gender proportion and income
+gender_count <- data %>%
+  group_by(gender) %>%
+  summarise(count = n()) %>%
+  mutate(percentage = round(count / sum(count) * 100, 1))
+
+pie_chart_gender <- ggplot(gender_count, aes(x = "", y = percentage, fill = gender)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar("y") +
+  geom_text(aes(label = paste0(percentage, "%")),
+            position = position_stack(vjust = 0.5), size = 3) +
+  theme_void() +
+  theme(legend.position = "right") +
+  labs(fill = "Gender")
+
+avg_income_gender <- data %>%
+  group_by(gender) %>%
+  summarise(Average_Income = mean(INCWAGE, na.rm = TRUE))
+
+bar_chart_gender <- ggplot(avg_income_gender, aes(x = gender, y = Average_Income, fill = gender)) +
+  geom_bar(stat = "identity", width = 0.6) +
+  geom_text(aes(label = round(Average_Income, 0)), 
+            vjust = -0.5, size = 3) +
+  labs(x = "Gender", y = "Average Income") +
+  theme_minimal() +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.2))) +  # Expand upper limit
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "none"
+  )
+
+# Race proportion and income
+race_count <- data %>%
+  group_by(race_group) %>%
+  summarise(count = n()) %>%
+  mutate(percentage = round(count / sum(count) * 100, 1))
+
+pie_chart_race <- ggplot(race_count, aes(x = "", y = percentage, fill = race_group)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar("y") +
+  geom_text(aes(label = paste0(percentage, "%")),
+            position = position_stack(vjust = 0.5), size = 3) +
+  theme_void() +
+  theme(legend.position = "right") +
+  labs(fill = "Race Group")
+
+avg_income_race <- data %>%
+  group_by(race_group) %>%
+  summarise(Average_Income = mean(INCWAGE, na.rm = TRUE))
+
+bar_chart_race <- ggplot(avg_income_race, aes(x = race_group, y = Average_Income, fill = race_group)) +
+  geom_bar(stat = "identity", width = 0.6) +
+  geom_text(aes(label = round(Average_Income, 0)), 
+            vjust = -0.5, size = 3) +
+  labs(x = "Race Group", y = "Average Income") +
+  theme_minimal() +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.2))) +  # Expand upper limit
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "none"
+  )
+
+# Region proportion and income
+region_count <- data %>%
+  group_by(region) %>%
+  summarise(count = n()) %>%
+  mutate(percentage = round(count / sum(count) * 100, 1))
+
+pie_chart_region <- ggplot(region_count, aes(x = "", y = percentage, fill = region)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar("y") +
+  geom_text(aes(label = paste0(percentage, "%")),
+            position = position_stack(vjust = 0.5), size = 3) +
+  theme_void() +
+  theme(legend.position = "right") +
+  labs(fill = "Region")
+
+avg_income_region <- data %>%
+  group_by(region) %>%
+  summarise(Average_Income = mean(INCWAGE, na.rm = TRUE))
+
+bar_chart_region <- ggplot(avg_income_region, aes(x = region, y = Average_Income, fill = region)) +
+  geom_bar(stat = "identity", width = 0.6) +
+  geom_text(aes(label = round(Average_Income, 0)), 
+            vjust = -0.5, size = 3) +
+  labs(x = "Region", y = "Average Income") +
+  theme_minimal() +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.2))) +  # Expand upper limit
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "none"
+  )
+# Education proportion and income
+education_count <- data %>%
+  group_by(education_level) %>%
+  summarise(count = n()) %>%
+  mutate(percentage = round(count / sum(count) * 100, 1))
+
+# 设置学历顺序
+education_levels <- c("Below_High_School", "High_School", "Some_College", "Bachelor", "Above_Bachelor")
+education_count <- education_count %>%
+  mutate(education_level = factor(education_level, levels = education_levels))
+
+avg_income_education <- data %>%
+  group_by(education_level) %>%
+  summarise(Average_Income = mean(INCWAGE, na.rm = TRUE)) %>%
+  mutate(education_level = factor(education_level, levels = education_levels))
+
+# Pie chart: education level proportion
+pie_chart_education <- ggplot(education_count, aes(x = "", y = percentage, fill = education_level)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar("y") +
+  geom_text(aes(label = paste0(percentage, "%")),
+            position = position_stack(vjust = 0.5), size = 3) +
+  theme_void() +
+  theme(legend.position = "right") +
+  labs(fill = "Education Level")
+
+# Bar chart: average income by education level, ordered
+bar_chart_education <- ggplot(avg_income_education, aes(x = education_level, y = Average_Income, fill = education_level)) +
+  geom_bar(stat = "identity", width = 0.6) +
+  geom_text(aes(label = round(Average_Income, 0)), 
+            vjust = -0.5, size = 3) +
+  labs(x = "Education Level", y = "Average Income") +
+  theme_minimal() +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.2)), labels = scales::comma) +  # Use comma format for y-axis
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "none"
+  )
+# Output all eight charts in four rows with two charts per row
+pie_chart_gender
+bar_chart_gender
+pie_chart_race
+bar_chart_race
+pie_chart_region
+bar_chart_region
+pie_chart_education
+bar_chart_education
+
+```
+
 
 ## Predictor variables
 
@@ -143,35 +278,6 @@ We can use maths by including latex between dollar signs, for instance $\theta$.
 
 Our results are summarized in @tbl-modelresults.
 
-```{r}
-#| echo: false
-#| eval: true
-#| warning: false
-#| message: false
-
-library(rstanarm)
-
-first_model <-
-  readRDS(file = here::here("models/first_model.rds"))
-```
-
-```{r}
-#| echo: false
-#| eval: true
-#| label: tbl-modelresults
-#| tbl-cap: "Explanatory models of flight time based on wing width and wing length"
-#| warning: false
-
-modelsummary::modelsummary(
-  list(
-    "First model" = first_model
-  ),
-  statistic = "mad",
-  fmt = 2
-)
-```
-
-
 
 
 # Discussion
@@ -206,48 +312,6 @@ Weaknesses and next steps should also be included.
 In @fig-ppcheckandposteriorvsprior-1 we implement a posterior predictive check. This shows...
 
 In @fig-ppcheckandposteriorvsprior-2 we compare the posterior with the prior. This shows... 
-
-```{r}
-#| eval: true
-#| echo: false
-#| message: false
-#| warning: false
-#| label: fig-ppcheckandposteriorvsprior
-#| layout-ncol: 2
-#| fig-cap: "Examining how the model fits, and is affected by, the data"
-#| fig-subcap: ["Posterior prediction check", "Comparing the posterior with the prior"]
-
-pp_check(first_model) +
-  theme_classic() +
-  theme(legend.position = "bottom")
-
-posterior_vs_prior(first_model) +
-  theme_minimal() +
-  scale_color_brewer(palette = "Set1") +
-  theme(legend.position = "bottom") +
-  coord_flip()
-```
-
-## Diagnostics
-
-@fig-stanareyouokay-1 is a trace plot. It shows... This suggests...
-
-@fig-stanareyouokay-2 is a Rhat plot. It shows... This suggests...
-
-```{r}
-#| echo: false
-#| eval: true
-#| message: false
-#| warning: false
-#| label: fig-stanareyouokay
-#| fig-cap: "Checking the convergence of the MCMC algorithm"
-#| fig-subcap: ["Trace plot", "Rhat plot"]
-#| layout-ncol: 2
-
-plot(first_model, "trace")
-
-plot(first_model, "rhat")
-```
 
 
 
