@@ -1,0 +1,559 @@
+LLM: ChatGPT-4o.
+Date: 22 November 2024
+
+
+User
+I would like to see the relationship between education and race. Heat map in R. Tell me how to code it.
+
+
+ChatGPT
+The following is the R code for plotting the same heatmap:
+
+r
+复制代码
+# Load necessary libraries
+library(ggplot2)
+library(reshape2)
+
+# Assume the data frame is named data, containing "education_level" and "race_group" columns
+
+# Ensure the order of education levels and race groups
+education_order <- c("Above_Bachelor", "Bachelor", "Some_College", "High_School", "Below_High_School")
+race_order <- c(unique(data$race_group[data$race_group != "Other"]), "Other")
+
+# Set education levels and race groups as factors with specified order
+data$education_level <- factor(data$education_level, levels = education_order)
+data$race_group <- factor(data$race_group, levels = race_order)
+
+# Create a contingency table and convert to proportions
+education_race_crosstab <- prop.table(table(data$education_level, data$race_group), margin = 2)
+
+# Convert the data from wide to long format
+heatmap_data <- melt(education_race_crosstab)
+
+# Plot the heatmap
+ggplot(heatmap_data, aes(Var2, Var1, fill = value)) +
+  geom_tile(color = "white") +
+  scale_fill_gradient(low = "white", high = "blue", name = "Proportion") +
+  labs(
+    title = "Proportion of Education Levels by Race Group",
+    x = "Race Group",
+    y = "Education Level"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+Explanation:
+Data Preparation:
+
+data is the original data frame and must include education_level and race_group columns.
+The order of education levels and race groups is specified for proper alignment.
+Plotting Logic:
+
+Use table to create a contingency table and prop.table to normalize it into proportions by column.
+Use melt to reshape the data into long format for processing with ggplot2.
+Customization Options:
+
+The color gradient (scale_fill_gradient) can be adjusted as needed.
+Titles and axis labels are set using labs.
+
+
+
+
+User
+Figures marked on the chart
+
+ChatGPT
+The following is the updated R code for adding proportion values to the heatmap:
+
+r
+复制代码
+# Load necessary libraries
+library(ggplot2)
+library(reshape2)
+
+# Assume the data frame is named data, containing "education_level" and "race_group" columns
+
+# Ensure the order of education levels and race groups
+education_order <- c("Above_Bachelor", "Bachelor", "Some_College", "High_School", "Below_High_School")
+race_order <- c(unique(data$race_group[data$race_group != "Other"]), "Other")
+
+# Set education levels and race groups as factors with specified order
+data$education_level <- factor(data$education_level, levels = education_order)
+data$race_group <- factor(data$race_group, levels = race_order)
+
+# Create a contingency table and convert to proportions
+education_race_crosstab <- prop.table(table(data$education_level, data$race_group), margin = 2)
+
+# Convert the data from wide to long format
+heatmap_data <- melt(education_race_crosstab)
+
+# Plot the heatmap with proportion values
+ggplot(heatmap_data, aes(Var2, Var1, fill = value)) +
+  geom_tile(color = "white") +
+  geom_text(aes(label = sprintf("%.2f", value)), color = "black", size = 4) + # Add proportion labels
+  scale_fill_gradient(low = "white", high = "blue", name = "Proportion") +
+  labs(
+    title = "Proportion of Education Levels by Race Group",
+    x = "Race Group",
+    y = "Education Level"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+Code Explanation:
+Add Text Labels:
+
+geom_text() is used to add proportion labels to the heatmap.
+aes(label = sprintf("%.2f", value)) formats the values to two decimal places.
+Adjust Text Style:
+
+Text color is set to black, and font size is set to 4. You can modify these as needed.
+Output:
+
+The heatmap will display proportion values in each cell, improving readability and detail.
+Run this code to generate a heatmap with numeric labels. Let me know if you need further styling adjustments!
+
+
+
+
+
+User
+Number colours are not visible in darker areas, is it possible to make the number colours change automatically with the bottom colour?
+
+ChatGPT
+Here is the updated code to dynamically adjust text color based on the background color in the heatmap:
+
+r
+复制代码
+# Ensure the order of education levels, arranged from low to high
+education_order <- c("Below_High_School", "High_School", "Some_College", "Bachelor", "Above_Bachelor")
+race_order <- c(unique(data$race_group[data$race_group != "Other"]), "Other")
+
+# Set education levels and race groups as factors with specified order
+data$education_level <- factor(data$education_level, levels = education_order)
+data$race_group <- factor(data$race_group, levels = race_order)
+
+# Create a contingency table and fill missing values with 0
+education_race_crosstab <- prop.table(table(data$education_level, data$race_group), margin = 2)
+education_race_crosstab[is.na(education_race_crosstab)] <- 0  # Fill NaN with 0
+
+# Convert the data from wide to long format
+heatmap_data <- melt(education_race_crosstab)
+
+# Plot the heatmap with dynamically adjusted text color
+ggplot(heatmap_data, aes(Var2, Var1, fill = value)) +
+  geom_tile(color = "white") +  # Heatmap tiles
+  geom_text(
+    aes(
+      label = sprintf("%.2f", value),
+      color = ifelse(value > 0.25, "white", "black")  # Adjust text color based on value
+    ),
+    size = 4
+  ) +
+  scale_fill_gradient(low = "white", high = "blue", name = "Proportion") +
+  scale_color_manual(values = c("black" = "black", "white" = "white"), guide = "none") +  # Define color mapping
+  labs(
+    title = "Proportion of Education Levels by Race Group",
+    x = "Race Group",
+    y = "Education Level"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+Key Modifications:
+Dynamic Text Color Adjustment:
+
+ifelse(value > 0.25, "white", "black"): Determines text color based on the value. Text is white for darker backgrounds (value > 0.25) and black otherwise.
+Manual Color Mapping:
+
+scale_color_manual(values = c("black" = "black", "white" = "white"), guide = "none"): Ensures the ifelse colors are valid and suppresses the legend for text colors.
+Threshold Adjustment:
+
+The threshold 0.25 is a placeholder. You can adjust it to suit your dataset, depending on the distribution of values in the heatmap.
+Output:
+After running the code, the heatmap will dynamically adjust text colors based on the background's brightness, improving readability. Let me know if you need further customization!
+
+
+
+
+
+User
+Plot a pie chart of the percentage of each race and a bar chart of the average wage of each race. The two graphs are placed side by side and share a common legend
+#| echo: false
+#| warning: false
+#| label: fig-race-gender-distribution
+#| fig-cap: "Race and Gender Distribution with Average Income"
+#| fig-subcap: ["Race Proportion (Pie Chart)", "Average Income by Race (Bar Chart)", "Gender Proportion (Pie Chart)", "Average Income by Gender (Bar Chart)"]
+#| layout-ncol: 2
+
+
+
+ChatGPT
+Of course, the two race charts and two gender charts can be combined into one layout, arranged in one or two rows. Below is the code to create the four charts:
+
+r
+复制代码
+#| echo: false
+#| warning: false
+#| label: fig-race-gender-distribution
+#| fig-cap: "Race and Gender Distribution with Average Income"
+#| fig-subcap: ["Race Proportion (Pie Chart)", "Average Income by Race (Bar Chart)", "Gender Proportion (Pie Chart)", "Average Income by Gender (Bar Chart)"]
+#| layout-ncol: 2
+
+# Calculate race proportion
+race_count <- data %>%
+  group_by(race_group) %>%
+  summarise(count = n()) %>%
+  mutate(percentage = round(count / sum(count) * 100, 1))
+
+# Pie chart: race proportion
+pie_chart_race <- ggplot(race_count, aes(x = "", y = percentage, fill = race_group)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar("y") +
+  geom_text(aes(label = paste0(percentage, "%")),
+            position = position_stack(vjust = 0.5), size = 4) +
+  theme_void() +
+  theme(legend.position = "right") +
+  labs(fill = "Race Group")
+
+# Calculate average income by race
+avg_income_race <- data %>%
+  group_by(race_group) %>%
+  summarise(Average_Income = mean(INCWAGE, na.rm = TRUE))
+
+# Bar chart: average income by race
+bar_chart_race <- ggplot(avg_income_race, aes(x = race_group, y = Average_Income, fill = race_group)) +
+  geom_bar(stat = "identity", width = 0.6) +
+  geom_text(aes(label = round(Average_Income, 0)), 
+            vjust = -0.5, size = 3.5) +
+  labs(x = "Race Group", y = "Average Income") +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "none"
+  )
+
+# Calculate gender proportion
+gender_count <- data %>%
+  group_by(gender) %>%
+  summarise(count = n()) %>%
+  mutate(percentage = round(count / sum(count) * 100, 1))
+
+# Pie chart: gender proportion
+pie_chart_gender <- ggplot(gender_count, aes(x = "", y = percentage, fill = gender)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar("y") +
+  geom_text(aes(label = paste0(percentage, "%")),
+            position = position_stack(vjust = 0.5), size = 4) +
+  theme_void() +
+  theme(legend.position = "right") +
+  labs(fill = "Gender")
+
+# Calculate average income by gender
+avg_income_gender <- data %>%
+  group_by(gender) %>%
+  summarise(Average_Income = mean(INCWAGE, na.rm = TRUE))
+
+# Bar chart: average income by gender
+bar_chart_gender <- ggplot(avg_income_gender, aes(x = gender, y = Average_Income, fill = gender)) +
+  geom_bar(stat = "identity", width = 0.6) +
+  geom_text(aes(label = round(Average_Income, 0)), 
+            vjust = -0.5, size = 3.5) +
+  labs(x = "Gender", y = "Average Income") +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "none"
+  )
+
+# Output all four charts, arranged in two rows
+pie_chart_race
+bar_chart_race
+pie_chart_gender
+bar_chart_gender
+Explanation:
+Race Charts:
+
+The pie chart shows race proportions.
+The bar chart displays the average income by race.
+Gender Charts:
+
+The pie chart shows gender proportions.
+The bar chart displays the average income by gender.
+Layout:
+
+layout-ncol: 2 arranges the charts in two columns.
+First row: Race pie chart + Race bar chart.
+Second row: Gender pie chart + Gender bar chart.
+Run this code to generate four neatly arranged charts with clear information. Let me know if further adjustments are needed!
+User
+可以让四个图放在一起吗？我想仿照这个，画性别的饼状图和各个性别平均工资的柱状图
+
+
+ChatGPT
+当然可以，将两个种族图表和两个性别图表组合在一起，总共四个图放在一行或两行排列。以下是实现四个图的代码：
+
+r
+复制代码
+#| echo: false
+#| warning: false
+#| label: fig-race-gender-distribution
+#| fig-cap: "Race and Gender Distribution with Average Income"
+#| fig-subcap: ["Race Proportion (Pie Chart)", "Average Income by Race (Bar Chart)", "Gender Proportion (Pie Chart)", "Average Income by Gender (Bar Chart)"]
+#| layout-ncol: 2
+
+# Calculate race proportion
+race_count <- data %>%
+  group_by(race_group) %>%
+  summarise(count = n()) %>%
+  mutate(percentage = round(count / sum(count) * 100, 1))
+
+# Pie chart: race proportion
+pie_chart_race <- ggplot(race_count, aes(x = "", y = percentage, fill = race_group)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar("y") +
+  geom_text(aes(label = paste0(percentage, "%")),
+            position = position_stack(vjust = 0.5), size = 4) +
+  theme_void() +
+  theme(legend.position = "right") +
+  labs(fill = "Race Group")
+
+# Calculate average income by race
+avg_income_race <- data %>%
+  group_by(race_group) %>%
+  summarise(Average_Income = mean(INCWAGE, na.rm = TRUE))
+
+# Bar chart: average income by race
+bar_chart_race <- ggplot(avg_income_race, aes(x = race_group, y = Average_Income, fill = race_group)) +
+  geom_bar(stat = "identity", width = 0.6) +
+  geom_text(aes(label = round(Average_Income, 0)), 
+            vjust = -0.5, size = 3.5) +
+  labs(x = "Race Group", y = "Average Income") +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "none"
+  )
+
+# Calculate gender proportion
+gender_count <- data %>%
+  group_by(gender) %>%
+  summarise(count = n()) %>%
+  mutate(percentage = round(count / sum(count) * 100, 1))
+
+# Pie chart: gender proportion
+pie_chart_gender <- ggplot(gender_count, aes(x = "", y = percentage, fill = gender)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar("y") +
+  geom_text(aes(label = paste0(percentage, "%")),
+            position = position_stack(vjust = 0.5), size = 4) +
+  theme_void() +
+  theme(legend.position = "right") +
+  labs(fill = "Gender")
+
+# Calculate average income by gender
+avg_income_gender <- data %>%
+  group_by(gender) %>%
+  summarise(Average_Income = mean(INCWAGE, na.rm = TRUE))
+
+# Bar chart: average income by gender
+bar_chart_gender <- ggplot(avg_income_gender, aes(x = gender, y = Average_Income, fill = gender)) +
+  geom_bar(stat = "identity", width = 0.6) +
+  geom_text(aes(label = round(Average_Income, 0)), 
+            vjust = -0.5, size = 3.5) +
+  labs(x = "Gender", y = "Average Income") +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "none"
+  )
+
+# Output all four charts, arranged in two rows
+pie_chart_race
+bar_chart_race
+pie_chart_gender
+bar_chart_gender
+
+
+User
+Similarly, add the graphs for geography and education.Leave enough space at the top for the numbers to be displayed in full, and also to relax the range of vertical coordinates. Do not use scientific notation
+
+ChatGPT
+Below is the code for displaying pie charts and bar charts for race, gender, region, and education, a total of eight charts arranged in two rows and four columns:
+
+r
+复制代码
+#| echo: false
+#| warning: false
+#| label: fig-demographics-distribution
+#| fig-cap: "Demographics Distribution and Average Income by Group"
+#| fig-subcap: [
+#| "Race Proportion (Pie Chart)", "Average Income by Race (Bar Chart)", 
+#| "Gender Proportion (Pie Chart)", "Average Income by Gender (Bar Chart)", 
+#| "Region Proportion (Pie Chart)", "Average Income by Region (Bar Chart)", 
+#| "Education Proportion (Pie Chart)", "Average Income by Education Level (Bar Chart)"
+#| ]
+#| layout-ncol: 4
+
+# Libraries
+library(ggplot2)
+library(dplyr)
+
+# Calculate race proportion
+race_count <- data %>%
+  group_by(race_group) %>%
+  summarise(count = n()) %>%
+  mutate(percentage = round(count / sum(count) * 100, 1))
+
+# Pie chart: race proportion
+pie_chart_race <- ggplot(race_count, aes(x = "", y = percentage, fill = race_group)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar("y") +
+  geom_text(aes(label = paste0(percentage, "%")),
+            position = position_stack(vjust = 0.5), size = 3) +
+  theme_void() +
+  theme(legend.position = "right") +
+  labs(fill = "Race Group")
+
+# Bar chart: average income by race
+avg_income_race <- data %>%
+  group_by(race_group) %>%
+  summarise(Average_Income = mean(INCWAGE, na.rm = TRUE))
+
+bar_chart_race <- ggplot(avg_income_race, aes(x = race_group, y = Average_Income, fill = race_group)) +
+  geom_bar(stat = "identity", width = 0.6) +
+  geom_text(aes(label = round(Average_Income, 0)), 
+            vjust = -0.5, size = 3) +
+  labs(x = "Race Group", y = "Average Income") +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "none"
+  )
+
+# Gender proportion and income
+gender_count <- data %>%
+  group_by(gender) %>%
+  summarise(count = n()) %>%
+  mutate(percentage = round(count / sum(count) * 100, 1))
+
+pie_chart_gender <- ggplot(gender_count, aes(x = "", y = percentage, fill = gender)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar("y") +
+  geom_text(aes(label = paste0(percentage, "%")),
+            position = position_stack(vjust = 0.5), size = 3) +
+  theme_void() +
+  theme(legend.position = "right") +
+  labs(fill = "Gender")
+
+avg_income_gender <- data %>%
+  group_by(gender) %>%
+  summarise(Average_Income = mean(INCWAGE, na.rm = TRUE))
+
+bar_chart_gender <- ggplot(avg_income_gender, aes(x = gender, y = Average_Income, fill = gender)) +
+  geom_bar(stat = "identity", width = 0.6) +
+  geom_text(aes(label = round(Average_Income, 0)), 
+            vjust = -0.5, size = 3) +
+  labs(x = "Gender", y = "Average Income") +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "none"
+  )
+
+# Region proportion and income
+region_count <- data %>%
+  group_by(region) %>%
+  summarise(count = n()) %>%
+  mutate(percentage = round(count / sum(count) * 100, 1))
+
+pie_chart_region <- ggplot(region_count, aes(x = "", y = percentage, fill = region)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar("y") +
+  geom_text(aes(label = paste0(percentage, "%")),
+            position = position_stack(vjust = 0.5), size = 3) +
+  theme_void() +
+  theme(legend.position = "right") +
+  labs(fill = "Region")
+
+avg_income_region <- data %>%
+  group_by(region) %>%
+  summarise(Average_Income = mean(INCWAGE, na.rm = TRUE))
+
+bar_chart_region <- ggplot(avg_income_region, aes(x = region, y = Average_Income, fill = region)) +
+  geom_bar(stat = "identity", width = 0.6) +
+  geom_text(aes(label = round(Average_Income, 0)), 
+            vjust = -0.5, size = 3) +
+  labs(x = "Region", y = "Average Income") +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "none"
+  )
+
+# Education proportion and income
+education_count <- data %>%
+  group_by(education_level) %>%
+  summarise(count = n()) %>%
+  mutate(percentage = round(count / sum(count) * 100, 1))
+
+pie_chart_education <- ggplot(education_count, aes(x = "", y = percentage, fill = education_level)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar("y") +
+  geom_text(aes(label = paste0(percentage, "%")),
+            position = position_stack(vjust = 0.5), size = 3) +
+  theme_void() +
+  theme(legend.position = "right") +
+  labs(fill = "Education Level")
+
+avg_income_education <- data %>%
+  group_by(education_level) %>%
+  summarise(Average_Income = mean(INCWAGE, na.rm = TRUE))
+
+bar_chart_education <- ggplot(avg_income_education, aes(x = education_level, y = Average_Income, fill = education_level)) +
+  geom_bar(stat = "identity", width = 0.6) +
+  geom_text(aes(label = round(Average_Income, 0)), 
+            vjust = -0.5, size = 3) +
+  labs(x = "Education Level", y = "Average Income") +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "none"
+  )
+
+# Output all eight charts
+pie_chart_race
+bar_chart_race
+pie_chart_gender
+bar_chart_gender
+pie_chart_region
+bar_chart_region
+pie_chart_education
+bar_chart_education
+Explanation:
+Arrangement of Eight Charts:
+
+First Row: Pie chart and bar chart for race and gender.
+Second Row: Pie chart and bar chart for region and education.
+Combination of Pie and Bar Charts:
+
+Each category (race, gender, region, education) has a pie chart for proportions and a bar chart for average income.
+Optimized Layout:
+
+Legends contain only necessary information.
+Bar charts include labels above bars for clarity.
+Run this code to generate eight charts neatly arranged in two rows and four columns. Let me know if you need further adjustments!
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

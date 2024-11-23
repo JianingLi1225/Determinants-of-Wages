@@ -22,6 +22,7 @@ library(tidyverse)
 library(ggplot2)
 library(dplyr)
 library(here)
+library(reshape2)
 ```
 
 ```{r}
@@ -230,6 +231,54 @@ pie_chart_education
 bar_chart_education
 
 ```
+
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| label: fig-Education-Race
+#| fig-cap: "Proportion of Education Levels by Race Group"
+
+# Ensure the order of education levels, arranged from low to high
+education_order <- c("Below_High_School", "High_School", "Some_College", "Bachelor", "Above_Bachelor")
+race_order <- c(unique(data$race_group[data$race_group != "Other"]), "Other")
+
+# Set education levels and race groups as factors with specified order
+data$education_level <- factor(data$education_level, levels = education_order)
+data$race_group <- factor(data$race_group, levels = race_order)
+
+# Create a contingency table and fill missing values with 0
+education_race_crosstab <- prop.table(table(data$education_level, data$race_group), margin = 2)
+education_race_crosstab[is.na(education_race_crosstab)] <- 0  # Fill NaN with 0
+
+# Convert the data from wide to long format
+heatmap_data <- melt(education_race_crosstab)
+
+# Plot the heatmap with proportion labels and dynamic text color
+ggplot(heatmap_data, aes(Var2, Var1, fill = value)) +
+  geom_tile(color = "white") +  # Heatmap tiles
+  geom_text(
+    aes(
+      label = sprintf("%.2f", value),
+      color = ifelse(value > 0.25, "white", "black")  
+    ),
+    size = 4
+  ) +
+  scale_fill_gradient(low = "white", high = "blue", name = "Proportion") +
+  scale_color_manual(values = c("black" = "black", "white" = "white"), guide = "none") +  # Define color mapping
+  labs(
+    x = "Race Group",
+    y = "Education Level"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+
+
+
+
 
 
 ## Predictor variables
