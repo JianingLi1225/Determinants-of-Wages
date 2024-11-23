@@ -1,69 +1,92 @@
 #### Preamble ####
-# Purpose: Tests... [...UPDATE THIS...]
-# Author: Rohan Alexander [...UPDATE THIS...]
-# Date: 26 September 2024 [...UPDATE THIS...]
-# Contact: rohan.alexander@utoronto.ca [...UPDATE THIS...]
+# Purpose: Tests the structure and validity of the analysis data.
+# Author: Jianing Li
+# Date: 22 November 2024
+# Contact: lijianing.li@mail.utoronto.ca
 # License: MIT
-# Pre-requisites: [...UPDATE THIS...]
-# Any other information needed? [...UPDATE THIS...]
-
+# Pre-requisites: 
+# - The `tidyverse`, `testthat`, `readr` and `here` packages must be installed and loaded.
+# - 03-clean_data.R must have been run
+# Any other information needed? Make sure you are in the `Determinants-of-Wages` rproj
 
 #### Workspace setup ####
 library(tidyverse)
 library(testthat)
+library(readr)
+library(here)
 
-data <- read_csv("data/02-analysis_data/analysis_data.csv")
-
+analysis_data <- read_csv(here("data", "01-analysis_data", "analysis_data.csv"))
 
 #### Test data ####
-# Test that the dataset has 151 rows - there are 151 divisions in Australia
-test_that("dataset has 151 rows", {
-  expect_equal(nrow(analysis_data), 151)
+# Tests for Dataset Structure and Loading
+test_that("Dataset structure and loading", {
+  # Test 1: Dataset exists
+  expect_true(exists("analysis_data"), "Analysis data was not loaded.")
+  
+  # Test 2: Dataset is a data frame
+  expect_true(is.data.frame(analysis_data), "Analysis data is not a data frame.")
+  
+  # Test 3: Dataset has non-zero rows and columns
+  expect_gt(nrow(analysis_data), 0, "Dataset has no rows.")
+  expect_gt(ncol(analysis_data), 0, "Dataset has no columns.")
+  
+  # Test 4: Dataset contains expected columns
+  expected_columns <- c("UHRSWORK", "INCWAGE", "region", "education_level", "age", "gender", "race_group")
+  expect_setequal(names(analysis_data), expected_columns)
 })
 
-# Test that the dataset has 3 columns
-test_that("dataset has 3 columns", {
-  expect_equal(ncol(analysis_data), 3)
+# Tests for Column Data Types
+test_that("Column data types", {
+  # Test 5: UHRSWORK is numeric
+  expect_type(analysis_data$UHRSWORK, "double")
+  
+  # Test 6: INCWAGE is numeric
+  expect_type(analysis_data$INCWAGE, "double")
+  
+  # Test 7: region is a character vector
+  expect_type(analysis_data$region, "character")
+  
+  # Test 8: education_level is a character vector
+  expect_type(analysis_data$education_level, "character")
+  
+  # Test 9: age is numeric
+  expect_type(analysis_data$age, "double")
+  
+  # Test 10: gender is a character vector
+  expect_type(analysis_data$gender, "character")
+  
+  # Test 11: race_group is a character vector
+  expect_type(analysis_data$race_group, "character")
 })
 
-# Test that the 'division' column is character type
-test_that("'division' is character", {
-  expect_type(analysis_data$division, "character")
-})
-
-# Test that the 'party' column is character type
-test_that("'party' is character", {
-  expect_type(analysis_data$party, "character")
-})
-
-# Test that the 'state' column is character type
-test_that("'state' is character", {
-  expect_type(analysis_data$state, "character")
-})
-
-# Test that there are no missing values in the dataset
-test_that("no missing values in dataset", {
-  expect_true(all(!is.na(analysis_data)))
-})
-
-# Test that 'division' contains unique values (no duplicates)
-test_that("'division' column contains unique values", {
-  expect_equal(length(unique(analysis_data$division)), 151)
-})
-
-# Test that 'state' contains only valid Australian state or territory names
-valid_states <- c("New South Wales", "Victoria", "Queensland", "South Australia", "Western Australia", 
-                  "Tasmania", "Northern Territory", "Australian Capital Territory")
-test_that("'state' contains valid Australian state names", {
-  expect_true(all(analysis_data$state %in% valid_states))
-})
-
-# Test that there are no empty strings in 'division', 'party', or 'state' columns
-test_that("no empty strings in 'division', 'party', or 'state' columns", {
-  expect_false(any(analysis_data$division == "" | analysis_data$party == "" | analysis_data$state == ""))
-})
-
-# Test that the 'party' column contains at least 2 unique values
-test_that("'party' column contains at least 2 unique values", {
-  expect_true(length(unique(analysis_data$party)) >= 2)
+# Tests for Value Ranges and Logical Consistency
+test_that("Value ranges and logical consistency", {
+  # Test 12: UHRSWORK is strictly greater than 0
+  expect_true(all(analysis_data$UHRSWORK > 0), "UHRSWORK values must be greater than 0.")
+  
+  # Test 13: INCWAGE is non-negative
+  expect_true(all(analysis_data$INCWAGE >= 0), "INCWAGE contains negative values.")
+  
+  # Test 14: age is within valid range (18–65)
+  expect_true(all(analysis_data$age >= 18 & analysis_data$age <= 65), "Age values are out of range.")
+  
+  # Test 15: region contains valid categories
+  valid_regions <- c("Northeast", "South", "Midwest", "West")
+  expect_true(all(analysis_data$region %in% valid_regions), "Invalid values found in region.")
+  
+  # Test 16: education_level contains valid categories
+  valid_education <- c("No_Education", "Primary_Education", "Middle_School", 
+                       "High_School", "Some_College", "Bachelors_or_Higher")
+  expect_true(all(analysis_data$education_level %in% valid_education), "Invalid values found in education_level.")
+  
+  # Test 17: gender contains valid categories
+  valid_genders <- c("Male", "Female")
+  expect_true(all(analysis_data$gender %in% valid_genders), "Invalid values found in gender.")
+  
+  # Test 18: race_group contains valid categories
+  valid_race_groups <- c("White", "Black", "Asian", "Native", "Mixed_Other")
+  expect_true(all(analysis_data$race_group %in% valid_race_groups), "Invalid values found in race_group.")
+  
+  # Test 19: Logical consistency: Individuals with no UHRSWORK should have zero income
+  expect_true(all(analysis_data$INCWAGE == 0 | analysis_data$UHRSWORK > 0), "Non-working individuals have positive income.")
 })

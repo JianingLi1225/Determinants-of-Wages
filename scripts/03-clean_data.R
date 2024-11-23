@@ -1,11 +1,13 @@
 #### Preamble ####
-# Purpose: Cleans the raw plane data recorded by two observers..... [...UPDATE THIS...]
-# Author: Rohan Alexander [...UPDATE THIS...]
-# Date: 6 April 2023 [...UPDATE THIS...]
-# Contact: rohan.alexander@utoronto.ca [...UPDATE THIS...]
+# Purpose: Cleaning raw data, removing invalid data and collating new variables
+# Author: Jianing Li
+# Date: 22 November 2024
+# Contact: lijianing.li@mail.utoronto.ca
 # License: MIT
-# Pre-requisites: [...UPDATE THIS...]
-# Any other information needed? [...UPDATE THIS...]
+# Pre-requisites: 
+# - The `tidyverse`, `dplyr` and `here` packages must be installed and loaded.
+# - The steps outlined in 02-download_data.R this document must be followed.
+# Any other information needed? Make sure you are in the `Determinants-of-Wages` rproj
 
 #### Workspace setup ####
 library(tidyverse)
@@ -41,7 +43,7 @@ cleaned_data <- raw_data %>%
     EDUC %in% c(10, 11) ~ "Bachelors_or_Higher"
   )) %>%
   mutate(age = ifelse(AGE == 999, NA, AGE)) %>%  # Replace 999 with NA
-  filter(!is.na(age) & age >= 16 & age <= 65) %>%  # Keep working age (16-65)
+  filter(!is.na(age) & age >= 18 & age <= 65) %>%  # Keep working age (18-65)
   filter(!(UHRSWORK %in% c(0, 99))) %>%  # Remove invalid work hours
   filter(!(INCWAGE %in% c(999999, 999998)) & INCWAGE > 0) %>%  # Remove invalid wages
   filter(SEX %in% c(1, 2)) %>%  # Keep valid gender values
