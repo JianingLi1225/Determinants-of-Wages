@@ -5,7 +5,7 @@
 # Contact: lijianing.li@mail.utoronto.ca
 # License: MIT
 # Pre-requisites: 
-# - The `tidyverse`, `testthat`, `readr` and `here` packages must be installed and loaded.
+# - The `tidyverse`, `testthat`, `readr`，`arrow` and `here` packages must be installed and loaded.
 # - 03-clean_data.R must have been run
 # Any other information needed? Make sure you are in the `Determinants-of-Wages` rproj
 
@@ -14,8 +14,9 @@ library(tidyverse)
 library(testthat)
 library(readr)
 library(here)
+library(arrow)
 
-analysis_data <- read_csv(here("data", "01-analysis_data", "analysis_data.csv"))
+analysis_data <- read_parquet(here("data", "01-analysis_data", "analysis_data.parquet"))
 
 #### Test data ####
 # Tests for Dataset Structure and Loading
@@ -38,10 +39,10 @@ test_that("Dataset structure and loading", {
 # Tests for Column Data Types
 test_that("Column data types", {
   # Test 5: UHRSWORK is numeric
-  expect_type(analysis_data$UHRSWORK, "double")
+  expect_type(analysis_data$UHRSWORK, "integer")
   
   # Test 6: INCWAGE is numeric
-  expect_type(analysis_data$INCWAGE, "double")
+  expect_type(analysis_data$INCWAGE, "integer")
   
   # Test 7: region is a character vector
   expect_type(analysis_data$region, "character")
@@ -50,7 +51,7 @@ test_that("Column data types", {
   expect_type(analysis_data$education_level, "character")
   
   # Test 9: age is numeric
-  expect_type(analysis_data$age, "double")
+  expect_type(analysis_data$age, "integer")
   
   # Test 10: gender is a character vector
   expect_type(analysis_data$gender, "character")

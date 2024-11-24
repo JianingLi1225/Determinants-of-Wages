@@ -5,7 +5,7 @@
 # Contact: lijianing.li@mail.utoronto.ca
 # License: MIT
 # Pre-requisites: 
-# - The `tidyverse`, `dplyr` and `here` packages must be installed and loaded.
+# - The `tidyverse`, `dplyr`，`arrow` and `here` packages must be installed and loaded.
 # - The steps outlined in 02-download_data.R this document must be followed.
 # Any other information needed? Make sure you are in the `Determinants-of-Wages` rproj
 
@@ -13,6 +13,7 @@
 library(tidyverse)
 library(dplyr)
 library(here)
+library(arrow)
 
 #### Clean data ####
 # Read data
@@ -65,6 +66,6 @@ analysis_data <- cleaned_data %>%
   slice_sample(n = 5000)
 
 # Save the cleaned data
-output_path <- here("data", "01-analysis_data", "analysis_data.csv")
-write.csv(analysis_data, output_path, row.names = FALSE)
+output_path <- here("data", "01-analysis_data", "analysis_data.parquet")
+write_parquet(analysis_data, output_path)
 

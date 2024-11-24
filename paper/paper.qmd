@@ -23,10 +23,18 @@ library(ggplot2)
 library(dplyr)
 library(here)
 library(reshape2)
+library(scales)
+library(arrow)
+library(knitr)
 ```
 
 ```{r}
-data <- read_csv(here("data", "01-analysis_data", "analysis_data.csv"))
+#| echo: false
+#| warning: false
+#| message: false
+
+data <- read_parquet(here("data", "01-analysis_data", "analysis_data.parquet"))
+
 ```
 
 # Introduction
@@ -44,36 +52,70 @@ Telegraphing paragraph: The remainder of this paper is structured as follows. @s
 
 
 
-
-
 # Data {#sec-data}
 
-## Overview
+## Data Overview
+Our data [@shelter]....
 
-We use the statistical programming language R [@citeR].... Our data [@shelter].... Following @tellingstories, we consider...
+We use the statistical programming language R [@citeR]....Our data [@shelter]....
 
-Overview text
+
+The IPUMS USA database [@ipums2024] is one of the largest collections of microdata from population censuses globally. Supported by organizations such as the National Institutes of Health and the University of Minnesota, it includes data from the American Community Survey (ACS) and other census programs. This resource provides detailed individual-level data, allowing researchers to address specific social, economic, and demographic questions. A key feature of IPUMS USA is its capacity to create customized datasets by selecting variables based on research needs, minimizing the inclusion of irrelevant data.
+
+For this study, data from the 2023 ACS sample in IPUMS USA were used. The selected variables include STATEFIP (state code), SEX (gender), AGE (age), RACE (race), EDUC (educational attainment), EMPSTAT (employment status), UHRSWORK (usual hours worked per week), and INCWAGE (wage and salary income). These variables cover geographic location, demographic characteristics, education, and employment conditions, providing a broad basis for examining factors influencing wage income.
+
+Other databases, such as IPUMS CPS [@ipums_cps2024] and the National Longitudinal Surveys [@nlsy1979], were considered but deemed less suitable for this analysis. IPUMS CPS provides detailed labor market data but has a smaller sample size and limited geographic detail. The National Longitudinal Surveys track specific population groups over time but lack broad representation, making them less ideal for cross-sectional studies. In contrast, the 2023 ACS data in IPUMS USA offers larger population coverage and a diverse range of variables, making it a better choice for analyzing wage determinants.
+
 
 ## Measurement
 	
-Some paragraphs about how we go from a phenomena in the world to an entry in the dataset.
+This study utilizes sample data from the 2023 ACS. The dataset is based on a 1% random national sample, ensuring broad representativeness. It includes individuals living in private households as well as those in group quarters, such as student dormitories and care facilities. Weights were applied to the data to account for potential biases introduced by the sampling design and nonresponse.
 
-## Outcome variables
+Data collection for the ACS involved structured questionnaires covering a wide range of topics, such as demographics, education, employment, and income. For example, UHRSWORK (usual hours worked per week) captures labor input based on respondents’ reports of their average weekly work hours. The smallest geographic unit in the dataset is the Public Use Microdata Area (PUMA), which contains at least 100,000 residents and falls within state boundaries. This structure protects respondent privacy while supporting regional analysis.
 
-Add graphs, tables and text. Use sub-sub-headings for each outcome variable or update the subheading to be singular.
+While the ACS methodology ensures data reliability and extensive coverage, variables like income and work hours rely on self-reported responses, which may introduce minor inaccuracies. Nonetheless, the use of sampling weights and robust design make the dataset a reliable foundation for studying wage income and its associated factors. A detailed explanation of the survey methodology and sampling design is provided in the appendix.
 
-
-
-
+## Dataset Description
 
 
 
 ```{r}
+#| echo: false
+#| warning: false
+
+
+# 确保每个分类变量的所有类别都被显示
+complete_data <- data %>%
+  group_by(education_level) %>%  # 替换为需要展示的分类变量
+  summarise_all(~ first(.))  # 保证每个类别至少展示一行
+
+# 使用 kable 生成表格
+library(knitr)
+kable(complete_data, caption = "Table 1: Categories of SEX Fully Displayed", align = 'c')
+
 
 ```
 
-Talk way more about it. 
 
+The cleaned dataset includes the following variables. UHRSWORK and INCWAGE are retained from the raw data, while the other variables are newly constructed. During the data cleaning process, only individuals aged 18-65 and those with an employment status of "Employed" were included. This ensures the dataset focuses on studying the wage determinants of the employed labor force. Below is a description of each variable and how it was constructed:
+
+UHRSWORK: Reports the number of hours per week the respondent usually worked if they were employed during the reference period. 
+
+INCWAGE: Represents each respondent's total pre-tax wage and salary income earned as an employee during the previous year.
+
+region: Constructed from the STATEFIP variable to represent geographic regions. Valid state codes (1–56) were grouped into four traditional U.S. regions: Northeast, Midwest, South, and West. Each state was assigned to its corresponding region for further regional analysis.
+
+education_level: Derived from the EDUC variable, which indicates respondents' educational attainment as measured by the highest year of school or degree completed. It is grouped into five categories: Below High School (includes all levels below high school), High School (completed grade 12), Some College (completed 1-2 years of college), Bachelor’s Degree (completed 4 years of college), and Above Bachelor (more than 5 years of higher education).age: Filtered from the AGE variable to include only respondents aged 18 to 65. This variable records the respondent’s age in years as of their last birthday.
+
+gender: Based on the SEX variable, with original codes recoded as “Male” and “Female.”
+
+race_group: Constructed from the RACE variable and grouped into four categories: White, Black, Asian, and Other. White and Black remain consistent with the original classifications. Asian includes Chinese, Japanese, and Other Asian categories, while Other includes all other races and mixed-race groups.
+
+
+
+
+
+## Data Results
 
 
 
@@ -188,7 +230,6 @@ education_count <- data %>%
   summarise(count = n()) %>%
   mutate(percentage = round(count / sum(count) * 100, 1))
 
-# 设置学历顺序
 education_levels <- c("Below_High_School", "High_School", "Some_College", "Bachelor", "Above_Bachelor")
 education_count <- education_count %>%
   mutate(education_level = factor(education_level, levels = education_levels))
@@ -234,6 +275,94 @@ bar_chart_education
 
 
 
+@fig-demographics-distribution illustrates the distribution of demographic characteristics and their relationship with average income across gender, race, region, and education level. Pie charts display the proportional distribution of each group, while bar charts show corresponding average income levels, providing a straightforward depiction of these relationships.
+
+Chart (a) shows the gender distribution: females account for 48.9% of the population, and males 51.1%, indicating a nearly equal split. Chart (b) shows that males earn an average income of $82,840, compared to $57,146 for females.
+
+Chart (c) presents the racial composition, with White individuals forming the largest group at 67%, followed by Black individuals at 18.2%, Asians at 6.8%, and other racial groups at 8.1%. Chart (d) shows that Asians have the highest average income at $96,574, followed by White individuals at $73,778. Black individuals and other racial groups earn $51,221 and $56,604, respectively.
+
+Chart (e) shows the regional distribution. The West represents the largest share at 29%, followed by the Northeast (26.6%), the South (24.1%), and the Midwest (20.3%). Chart (f) indicates that the Midwest has the lowest average income at $62,046, while the Northeast has the highest at $78,138. The South and West have average incomes of $66,954 and $75,293, respectively.
+
+Chart (g) shows education levels: 16.5% of the population has less than a high school education, 30.4% has completed high school, 23.5% has some college education, 26.2% holds a bachelor’s degree, and 9.5% has education beyond a bachelor’s degree. Chart (h) highlights the connection between education and income. Those with less than a high school education earn $36,149 on average, while individuals with a bachelor’s degree or higher earn $87,465 and $124,144, respectively. Income increases steadily with higher levels of education.
+
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| label: fig-combined-visualizations
+#| fig-cap: "Income Trends by Age and Work Hours"
+#| fig-subcap: [
+#| "Work Hours vs Income", 
+#| "Average Income by Age", 
+#| "Age vs Income", 
+#| "Average Income by Work Hours"
+#| ]
+#| layout-ncol: 2
+
+# Calculate average income by work hours
+workhours_avg_income <- data %>%
+  group_by(UHRSWORK) %>%
+  summarise(avg_income = mean(INCWAGE, na.rm = TRUE))
+
+# Calculate average income by age
+age_avg_income <- data %>%
+  group_by(age) %>%
+  summarise(avg_income = mean(INCWAGE, na.rm = TRUE))
+
+# Work Hours vs Income with quadratic fit
+plot1 <- ggplot(data, aes(x = UHRSWORK, y = INCWAGE)) +
+  geom_point(color = "blue", alpha = 0.6) +
+  geom_smooth(method = "lm", formula = y ~ poly(x, 2), color = "red") +
+  labs(x = "Work Hours", y = "Income") +
+  theme_minimal() +
+  theme(plot.title = element_blank()) +
+  scale_y_continuous(labels = comma)
+
+# Line chart of average income by work hours 
+plot2 <- ggplot(workhours_avg_income, aes(x = UHRSWORK, y = avg_income)) +
+  geom_line(color = "blue", size = 1) +
+  geom_point(color = "blue", size = 2) +
+  labs(x = "Work Hours", y = "Average Income") +
+  theme_minimal() +
+  theme(plot.title = element_blank())
+
+# Age vs Income with quadratic fit
+plot3 <- ggplot(data, aes(x = age, y = INCWAGE)) +
+  geom_point(color = "orange", alpha = 0.6) +
+  geom_smooth(method = "lm", formula = y ~ poly(x, 2), color = "red") +
+  labs(x = "Age", y = "Income") +
+  theme_minimal() +
+  theme(plot.title = element_blank()) +
+  scale_y_continuous(labels = comma)
+
+
+# Line chart of average income by age (no change needed)
+plot4 <- ggplot(age_avg_income, aes(x = age, y = avg_income)) +
+  geom_line(color = "orange", size = 1) +
+  geom_point(color = "orange", size = 2) +
+  labs(x = "Age", y = "Average Income") +
+  theme_minimal() +
+  theme(plot.title = element_blank())
+
+
+# Display the plots
+plot1
+plot2
+plot3
+plot4
+
+```
+
+@fig-combined-visualizations examines the relationship between income, work hours, and age, incorporating both individual-level data and aggregated trends.
+
+Chart (a) is a scatter plot of work hours versus income, with each point representing an individual. The red quadratic regression line indicates a positive correlation between income and work hours, where longer hours generally lead to higher income. However, the regression line primarily reflects a linear trend, suggesting a stable relationship between income and work hours without significant signs of deceleration. Additionally, income variability increases with longer work hours, particularly beyond 50 hours per week, where fluctuations become more pronounced. Chart (b) illustrates the relationship between work hours and average income. While income generally increases with work hours, especially between 20 and 50 hours per week, it becomes unstable beyond 50 hours.
+
+Chart (c) is a scatter plot of age versus income, with the red quadratic regression line showing that income increases with age before eventually declining. Chart (d) depicts the trend of average income by age. The line chart shows that average income steadily rises with age, peaking in the late 40s and early 50s, and gradually declines as individuals approach retirement age.
+
+
+
 ```{r}
 #| echo: false
 #| warning: false
@@ -276,16 +405,12 @@ ggplot(heatmap_data, aes(Var2, Var1, fill = value)) +
 
 ```
 
+The chart illustrates the proportion of different education levels across racial groups. The horizontal axis represents racial groups, including "Asian," "Black," "White," and "Other," while the vertical axis represents education levels, ranging from "Below High School" to "Above Bachelor." The intensity of blue indicates the proportion, with darker shades representing higher values.
 
+Among Asians, the proportion of highly educated individuals is relatively high, with 38% holding a bachelor's degree and 30% having education beyond a bachelor's degree, while the proportion of those with "Below High School" education is 0%. In the Black group, "High School" accounts for the largest proportion at 32%, followed by "Some College" at 27%, while those with "Above Bachelor" degrees make up only 16%. In the White group, "High School" accounts for 29%, with 27% holding a bachelor's degree and 24% having "Some College" education, while 17% have "Above Bachelor" degrees. Among the "Other" group, 40% have a "High School" education, 25% have "Some College," 17% hold a bachelor's degree, and only 9% have "Above Bachelor" degrees.
 
+Overall, the distribution of education levels varies across racial groups. Asians have a higher proportion of highly educated individuals compared to other groups, while "High School" education is more prevalent among Black and "Other" groups. This reflects the complex relationship between race and educational background.
 
-
-
-## Predictor variables
-
-Add graphs, tables and text.
-
-Use sub-sub-headings for each outcome variable and feel free to combine a few into one if they go together naturally.
 
 
 
