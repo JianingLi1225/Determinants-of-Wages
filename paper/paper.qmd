@@ -27,6 +27,8 @@ library(scales)
 library(arrow)
 library(knitr)
 library(kableExtra)
+library(car) 
+library(broom) 
 ```
 
 ```{r}
@@ -77,8 +79,6 @@ Data collection for the ACS involved structured questionnaires covering a wide r
 While the ACS methodology ensures data reliability and extensive coverage, variables like income and work hours rely on self-reported responses, which may introduce minor inaccuracies. Nonetheless, the use of sampling weights and robust design make the dataset a reliable foundation for studying wage income and its associated factors. A detailed explanation of the survey methodology and sampling design is provided in the appendix.
 
 ## Dataset Description
-
-
 
 
 ```{r}
@@ -431,13 +431,14 @@ Overall, the distribution of education levels varies across racial groups. Asian
 
 The goal of our modelling strategy is to quantify the contributions of key factors—such as weekly working hours, age (and its quadratic term), education level, region, gender, and race—to variations in income (log-transformed). By estimating the relative impact of these predictors, the model provides insights into potential social and demographic disparities in income.
 
-Here we briefly describe the multiple linear regression model used to investigate these relationships. The model captures both linear and nonlinear effects (e.g., through the quadratic term for age), and all categorical variables are treated as factors to account for group-level differences. Background details, including diagnostics and model assumptions, are included in.
+Here we briefly describe the multiple linear regression model used to investigate these relationships. The model captures both linear and nonlinear effects (e.g., through the quadratic term for age), and all categorical variables are treated as factors to account for group-level differences. 
+
 
 ## Model set-up
 
 This study use Multiple Linear Regression (MLR) to model the relationship between income and various predictors, implemented using R's `lm` function. The dataset is divided into training and testing sets using the `createDataPartition` function from the `caret` package, with 60% allocated for model training and parameter estimation and 40% for testing to evaluate predictive performance. 
 
-Multiple regression models rely on several assumptions: linearity, meaning a linear relationship exists between independent and dependent variables; homoskedasticity, requiring constant error variance across predictors; independence of errors, meaning residuals are uncorrelated; normality, where residuals follow a normal distribution; and independence of independent variables, ensuring no significant multicollinearity.
+Multiple regression models rely on several assumptions: linearity, meaning a linear relationship exists between independent and dependent variables; homoskedasticity, requiring constant error variance across predictors; independence of errors, meaning residuals are uncorrelated; normality, where residuals follow a normal distribution; and independence of independent variables, ensuring no significant multicollinearity. These assumptions are discussed in @sec-model-details and evaluated using the diagnostic plots shown in @fig-check.
 
 
 The final model is displayed below:
@@ -461,6 +462,7 @@ The final model is displayed below:
 
 
 ### Model justification
+
 
 ```{r}
 #| echo: false
@@ -541,10 +543,10 @@ The selection of variables and model structure was based on theory and data char
 
 During the model selection process, an initial model included an interaction term between education level and race group (education_level:race_group), based on the association observed in @fig-Education-Race, while other variables remained unchanged. This interaction term aimed to evaluate income differences across racial groups at the same education level. However, most interaction terms were not statistically significant and provided minimal improvement to model fit metrics, such as adjusted $R^2$ and AIC. To simplify the model and enhance interpretability, this interaction term was excluded from the final specification.
 
+The evaluation of the final model's performance was conducted on both training and testing datasets. As shown in tbl-test, the RMSE and MAE values are slightly higher for the testing data compared to the training data (0.786 vs. 0.773 for RMSE, and 0.568 vs. 0.543 for MAE), reflecting a modest decline in predictive accuracy when applied to unseen data. Similarly, the $R^2$ values are 0.488 for the training set and 0.468 for the testing set, indicating that the model captures a moderate proportion of the variability in the log-transformed income. Additionally, all variables included in the final model were statistically significant, with $p$-values below 0.05, further supporting the robustness of the selected predictors. Overall, the final model achieves a practical balance between complexity, interpretability, and predictive performance.
 
 
 ### Model Results
-
 
 
 ```{r}
@@ -573,6 +575,21 @@ kable(
 
 ```
 
+@tbl-modelresults presents the effects of weekly working hours, age, region, education level, gender, and racial group on log income, along with their 95% confidence intervals. The estimated coefficients indicate varying degrees of influence among these factors.
+
+Education level has the strongest impact on income. Compared to those with a high school education (the reference group), individuals with education beyond a bachelor’s degree have a coefficient of 1.084, showing a significant increase in income. Similarly, those with a bachelor’s degree and some college education have coefficients of 0.8713 and 0.5094, respectively, suggesting higher education correlates with higher income.
+
+Age and its quadratic term reveal a nonlinear relationship. The positive coefficient for age (0.0985) indicates income increases with age. However, the negative coefficient for the quadratic term (-0.0010) shows this growth slows over time, eventually declining. This pattern reflects typical career income trajectories, with rapid growth early on, stability in middle age, and potential decreases later in life.
+
+Gender also plays a significant role. Male income is significantly higher than female income, with a coefficient of 0.2632, even after controlling for other factors.
+
+The effect of region varies. Compared to the Midwest (reference group), incomes in the West and Northeast are higher, with coefficients of 0.1560 and 0.1287. The coefficient for the South is -0.0192, close to zero, indicating little difference. This may relate to regional economic conditions and policies.
+
+Weekly working hours show a modest effect on income, with a coefficient of 0.040. While longer hours increase income, the impact is relatively small, potentially due to wage structures and overtime policies.
+
+The effects of racial group are more complex. Compared to Asian individuals (reference group), income for Black and "Other" racial groups is notably lower, with coefficients of -0.1014 and -0.1290. The coefficient for White individuals is nearly zero (-0.0007), indicating no significant difference. These patterns reflect complexities in racial income disparities.
+
+In summary, education level has the largest influence on income, followed by age and gender. Region and racial group also play roles, while the effect of weekly working hours is smaller. These results provide a clear picture of how socioeconomic factors affect income and offer important context for further research and policymaking.
 
 
 
@@ -654,6 +671,55 @@ p2
 ```
 
 
+```{r}
+#| echo: false
+#| warning: false
+#| label: fig-check
+#| fig-cap: "Model Assumption Checks"
+#| fig-subcap: [
+#| "Residuals vs Fitted", "Normal Q-Q Plot", 
+#| "Scale-Location", "Residuals vs Leverage"
+#| ]
+#| layout-ncol: 2
+
+# Extract residuals and fitted values from the model
+model_data <- augment(final_model)
+
+# Check linearity assumption: Residuals vs Fitted Plot
+residuals_vs_fitted <- ggplot(model_data, aes(.fitted, .resid)) +
+  geom_point(alpha = 0.6) +
+  geom_smooth(method = "loess", se = FALSE, color = "red") +
+  labs(x = "Fitted values", y = "Residuals") +
+  theme_minimal()
+
+# Check normality of residuals: Normal Q-Q Plot
+qq_plot <- ggplot(model_data, aes(sample = .std.resid)) +
+  stat_qq() +
+  stat_qq_line(color = "red") +
+  labs(x = "Theoretical Quantiles", y = "Standardized Residuals") +
+  theme_minimal()
+
+# Check homoscedasticity: Scale-Location Plot
+scale_location <- ggplot(model_data, aes(.fitted, sqrt(abs(.std.resid)))) +
+  geom_point(alpha = 0.6) +
+  geom_smooth(method = "loess", se = FALSE, color = "red") +
+  labs(x = "Fitted values", y = "Sqrt(Standardized Residuals)") +
+  theme_minimal()
+
+# Check for outliers and leverage points: Residuals vs Leverage
+residuals_leverage <- ggplot(model_data, aes(.hat, .std.resid)) +
+  geom_point(alpha = 0.6) +
+  geom_smooth(method = "loess", se = FALSE, color = "red") +
+  labs(x = "Leverage", y = "Standardized Residuals") +
+  theme_minimal()
+
+residuals_vs_fitted
+qq_plot
+scale_location
+residuals_leverage
+
+```
+The model assumptions were checked using @fig-check. First, the Residuals vs Fitted plot tests the linearity assumption, showing that residuals are randomly scattered around the fitted values without any clear pattern, indicating that the linear relationship is valid. Second, the Normal Q-Q plot checks for the normality of residuals. Most points align closely with the diagonal line, suggesting the residuals are approximately normally distributed, with only slight deviations at the tails. Third, the Scale-Location plot evaluates homoskedasticity, and the red line remains mostly flat, suggesting that the variance of the residuals is fairly consistent. Finally, the Residuals vs Leverage plot identifies potential outliers or high-leverage points, indirectly testing the independence of errors and the independence of variables. Most points have low leverage, with only a few high-leverage points that may need attention. Overall, the assumptions are largely met, though there are some limitations that could be addressed with further refinements in the analysis.
 
 
 \newpage
