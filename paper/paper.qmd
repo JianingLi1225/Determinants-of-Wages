@@ -26,6 +26,7 @@ library(reshape2)
 library(scales)
 library(arrow)
 library(knitr)
+library(kableExtra)
 ```
 
 ```{r}
@@ -79,37 +80,50 @@ While the ACS methodology ensures data reliability and extensive coverage, varia
 
 
 
+
 ```{r}
 #| echo: false
+#| eval: true
+#| label: tbl-datasummary
+#| tbl-cap: "Cleaned Data Overview"
 #| warning: false
+#| results: asis
 
-
-# 确保每个分类变量的所有类别都被显示
+# Ensure all categories of each categorical variable are displayed
 complete_data <- data %>%
-  group_by(education_level) %>%  # 替换为需要展示的分类变量
-  summarise_all(~ first(.))  # 保证每个类别至少展示一行
+  group_by(education_level) %>%      
+  summarise_all(~ first(.)) %>%       # Ensure at least one row is displayed for each category
+  select(INCWAGE, UHRSWORK, everything())   
 
-# 使用 kable 生成表格
-library(knitr)
-kable(complete_data, caption = "Table 1: Categories of SEX Fully Displayed", align = 'c')
-
-
+kable(
+  complete_data, 
+  align = 'c',
+  format = "latex"
+) %>%
+  kable_styling(
+    latex_options = "scale_down",  
+    full_width = FALSE
+  ) %>%
+  column_spec(1, width = "3cm")          
 ```
 
 
-The cleaned dataset includes the following variables. UHRSWORK and INCWAGE are retained from the raw data, while the other variables are newly constructed. During the data cleaning process, only individuals aged 18-65 and those with an employment status of "Employed" were included. This ensures the dataset focuses on studying the wage determinants of the employed labor force. Below is a description of each variable and how it was constructed:
+The sample of the cleaned dataset is shown in @tbl-datasummary, including the following variables. UHRSWORK and INCWAGE are retained from the raw data, while the other variables are newly constructed. During the data cleaning process, only individuals aged 18-65 and those with an employment status of "Employed" were included. This ensures the dataset focuses on studying the wage determinants of the employed labor force. Below is a description of each variable and how it was constructed:
 
-UHRSWORK: Reports the number of hours per week the respondent usually worked if they were employed during the reference period. 
+- **UHRSWORK**: Reports the number of hours per week the respondent usually worked if they were employed during the reference period. 
 
-INCWAGE: Represents each respondent's total pre-tax wage and salary income earned as an employee during the previous year.
+- **INCWAGE**: Represents each respondent's total pre-tax wage and salary income earned as an employee during the previous year.
 
-region: Constructed from the STATEFIP variable to represent geographic regions. Valid state codes (1–56) were grouped into four traditional U.S. regions: Northeast, Midwest, South, and West. Each state was assigned to its corresponding region for further regional analysis.
 
-education_level: Derived from the EDUC variable, which indicates respondents' educational attainment as measured by the highest year of school or degree completed. It is grouped into five categories: Below High School (includes all levels below high school), High School (completed grade 12), Some College (completed 1-2 years of college), Bachelor’s Degree (completed 4 years of college), and Above Bachelor (more than 5 years of higher education).age: Filtered from the AGE variable to include only respondents aged 18 to 65. This variable records the respondent’s age in years as of their last birthday.
+- **education_level**: Derived from the EDUC variable, which indicates respondents' educational attainment as measured by the highest year of school or degree completed. It is grouped into five categories: Below High School (includes all levels below high school), High School (completed grade 12), Some College (completed 1-2 years of college), Bachelor’s Degree (completed 4 years of college), and Above Bachelor (more than 5 years of higher education).
 
-gender: Based on the SEX variable, with original codes recoded as “Male” and “Female.”
+- **age**: Filtered from the AGE variable to include only respondents aged 18 to 65. This variable records the respondent’s age in years as of their last birthday.
 
-race_group: Constructed from the RACE variable and grouped into four categories: White, Black, Asian, and Other. White and Black remain consistent with the original classifications. Asian includes Chinese, Japanese, and Other Asian categories, while Other includes all other races and mixed-race groups.
+- **region**: Constructed from the STATEFIP variable to represent geographic regions. Valid state codes (1–56) were grouped into four traditional U.S. regions: Northeast, Midwest, South, and West. Each state was assigned to its corresponding region for further regional analysis.
+
+- **gender**: Based on the SEX variable, with original codes recoded as “Male” and “Female.”
+
+- **race_group**: Constructed from the RACE variable and grouped into four categories: White, Black, Asian, and Other. White and Black remain consistent with the original classifications. Asian includes Chinese, Japanese, and Other Asian categories, while Other includes all other races and mixed-race groups.
 
 
 
@@ -313,7 +327,7 @@ age_avg_income <- data %>%
 
 # Work Hours vs Income with quadratic fit
 plot1 <- ggplot(data, aes(x = UHRSWORK, y = INCWAGE)) +
-  geom_point(color = "blue", alpha = 0.6) +
+  geom_point(color = "steelblue", alpha = 0.6) +
   geom_smooth(method = "lm", formula = y ~ poly(x, 2), color = "red") +
   labs(x = "Work Hours", y = "Income") +
   theme_minimal() +
@@ -322,15 +336,15 @@ plot1 <- ggplot(data, aes(x = UHRSWORK, y = INCWAGE)) +
 
 # Line chart of average income by work hours 
 plot2 <- ggplot(workhours_avg_income, aes(x = UHRSWORK, y = avg_income)) +
-  geom_line(color = "blue", size = 1) +
-  geom_point(color = "blue", size = 2) +
+  geom_line(color = "steelblue", size = 1) +
+  geom_point(color = "steelblue", size = 2) +
   labs(x = "Work Hours", y = "Average Income") +
   theme_minimal() +
   theme(plot.title = element_blank())
 
 # Age vs Income with quadratic fit
 plot3 <- ggplot(data, aes(x = age, y = INCWAGE)) +
-  geom_point(color = "orange", alpha = 0.6) +
+  geom_point(color = "darkorange", alpha = 0.6) +
   geom_smooth(method = "lm", formula = y ~ poly(x, 2), color = "red") +
   labs(x = "Age", y = "Income") +
   theme_minimal() +
@@ -340,8 +354,8 @@ plot3 <- ggplot(data, aes(x = age, y = INCWAGE)) +
 
 # Line chart of average income by age (no change needed)
 plot4 <- ggplot(age_avg_income, aes(x = age, y = avg_income)) +
-  geom_line(color = "orange", size = 1) +
-  geom_point(color = "orange", size = 2) +
+  geom_line(color = "darkorange", size = 1) +
+  geom_point(color = "darkorange", size = 2) +
   labs(x = "Age", y = "Average Income") +
   theme_minimal() +
   theme(plot.title = element_blank())
@@ -394,7 +408,7 @@ ggplot(heatmap_data, aes(Var2, Var1, fill = value)) +
     ),
     size = 4
   ) +
-  scale_fill_gradient(low = "white", high = "blue", name = "Proportion") +
+  scale_fill_gradient(low = "white", high = "steelblue", name = "Proportion") +
   scale_color_manual(values = c("black" = "black", "white" = "white"), guide = "none") +  # Define color mapping
   labs(
     x = "Race Group",
@@ -405,7 +419,7 @@ ggplot(heatmap_data, aes(Var2, Var1, fill = value)) +
 
 ```
 
-The chart illustrates the proportion of different education levels across racial groups. The horizontal axis represents racial groups, including "Asian," "Black," "White," and "Other," while the vertical axis represents education levels, ranging from "Below High School" to "Above Bachelor." The intensity of blue indicates the proportion, with darker shades representing higher values.
+@fig-Education-Race illustrates the proportion of different education levels across racial groups. The horizontal axis represents racial groups, including "Asian," "Black," "White," and "Other," while the vertical axis represents education levels, ranging from "Below High School" to "Above Bachelor." The intensity of blue indicates the proportion, with darker shades representing higher values.
 
 Among Asians, the proportion of highly educated individuals is relatively high, with 38% holding a bachelor's degree and 30% having education beyond a bachelor's degree, while the proportion of those with "Below High School" education is 0%. In the Black group, "High School" accounts for the largest proportion at 32%, followed by "Some College" at 27%, while those with "Above Bachelor" degrees make up only 16%. In the White group, "High School" accounts for 29%, with 27% holding a bachelor's degree and 24% having "Some College" education, while 17% have "Above Bachelor" degrees. Among the "Other" group, 40% have a "High School" education, 25% have "Some College," 17% hold a bachelor's degree, and only 9% have "Above Bachelor" degrees.
 
@@ -413,44 +427,157 @@ Overall, the distribution of education levels varies across racial groups. Asian
 
 
 
-
-
-
-
-
-
 # Model
 
-The goal of our modelling strategy is twofold. Firstly,...
+The goal of our modelling strategy is to quantify the contributions of key factors—such as weekly working hours, age (and its quadratic term), education level, region, gender, and race—to variations in income (log-transformed). By estimating the relative impact of these predictors, the model provides insights into potential social and demographic disparities in income.
 
-Here we briefly describe the Bayesian analysis model used to investigate... Background details and diagnostics are included in [Appendix -@sec-model-details].
+Here we briefly describe the multiple linear regression model used to investigate these relationships. The model captures both linear and nonlinear effects (e.g., through the quadratic term for age), and all categorical variables are treated as factors to account for group-level differences. Background details, including diagnostics and model assumptions, are included in.
 
 ## Model set-up
 
-Define $y_i$ as the number of seconds that the plane remained aloft. Then $\beta_i$ is the wing width and $\gamma_i$ is the wing length, both measured in millimeters.  
+This study use Multiple Linear Regression (MLR) to model the relationship between income and various predictors, implemented using R's `lm` function. The dataset is divided into training and testing sets using the `createDataPartition` function from the `caret` package, with 60% allocated for model training and parameter estimation and 40% for testing to evaluate predictive performance. 
 
-\begin{align} 
-y_i|\mu_i, \sigma &\sim \mbox{Normal}(\mu_i, \sigma) \\
-\mu_i &= \alpha + \beta_i + \gamma_i\\
-\alpha &\sim \mbox{Normal}(0, 2.5) \\
-\beta &\sim \mbox{Normal}(0, 2.5) \\
-\gamma &\sim \mbox{Normal}(0, 2.5) \\
-\sigma &\sim \mbox{Exponential}(1)
+Multiple regression models rely on several assumptions: linearity, meaning a linear relationship exists between independent and dependent variables; homoskedasticity, requiring constant error variance across predictors; independence of errors, meaning residuals are uncorrelated; normality, where residuals follow a normal distribution; and independence of independent variables, ensuring no significant multicollinearity.
+
+
+The final model is displayed below:
+
+\begin{align}
+\log(\text{INCWAGE}_i) &= \beta_{0} + \beta_{1}\text{UHRSWORK}_i + \beta_{2}\text{region}_i \nonumber \\
+&\quad + \beta_{3}\text{education\_level}_i + \beta_{4}\text{age}_i + \beta_{5}\text{age}_i^2 \nonumber \\
+&\quad + \beta_{6}\text{gender}_i + \beta_{7}\text{race\_group}_i + \epsilon_i \label{eq:1}
 \end{align}
 
-We run the model in R [@citeR] using the `rstanarm` package of @rstanarm. We use the default priors from `rstanarm`.
+- $\beta_{0}$ is the coefficient for the intercept.  
+- $\beta_{1}$ is the coefficient for the continuous variable $\text{UHRSWORK}_i$, which measures weekly hours worked.  
+- $\beta_{2}$ is the coefficient corresponding to the categorical variable $\text{region}_i$, which includes the levels Midwest, Northeast, South, and West. Midwest is the reference level.  
+- $\beta_{3}$ is the coefficient corresponding to the categorical variable $\text{education\_level}_i$, which includes the levels Above Bachelor, Bachelor, Below High School, High School, and Some College. Above Bachelor is the reference level.  
+- $\beta_{4}$ and $\beta_{5}$ are the coefficients for the linear and quadratic terms of $\text{age}_i$, capturing the nonlinear relationship between age and income.  
+- $\beta_{6}$ is the coefficient for the binary variable $\text{gender}_i$, which includes the levels Male and Female. Female is the reference level.  
+- $\beta_{7}$ is the coefficient corresponding to the categorical variable $\text{race\_group}_i$, which includes the levels Asian, Black, Other, and White. Asian is the reference level.  
+- $\epsilon_i$ is the error term, capturing the deviation of the observed value from the predicted value due to unobserved factors.
+
+
 
 
 ### Model justification
 
-We expect a positive relationship between the size of the wings and time spent aloft. In particular...
+```{r}
+#| echo: false
+#| eval: true
+#| warning: false
+#| message: false
 
-We can use maths by including latex between dollar signs, for instance $\theta$.
+# Load the saved final model
+final_model <-
+  readRDS(file = here::here("models/final_model.rds"))
+
+# Load the training and testing datasets
+train_data <- readRDS(file = here::here("models", "train_data.rds"))
+test_data <- readRDS(file = here::here("models", "test_data.rds"))
+```
 
 
-# Results
 
-Our results are summarized in @tbl-modelresults.
+
+```{r}
+#| echo: false
+#| eval: true
+#| label: tbl-test
+#| tbl-cap: "Training and Testing Data Evaluation Results"
+#| warning: false
+#| results: asis
+
+library(caret)
+library(broom)
+library(knitr)
+library(kableExtra)
+
+# Predict on the training set
+train_data$predicted_log_INCWAGE <- predict(final_model, newdata = train_data)
+
+# Predict on the testing set
+test_data$predicted_log_INCWAGE <- predict(final_model, newdata = test_data)
+
+# Convert from log scale (exp) to original income values (optional)
+train_data$predicted_INCWAGE <- exp(train_data$predicted_log_INCWAGE)
+train_data$actual_INCWAGE <- exp(train_data$log_INCWAGE)
+test_data$predicted_INCWAGE <- exp(test_data$predicted_log_INCWAGE)
+test_data$actual_INCWAGE <- exp(test_data$log_INCWAGE)
+
+# Calculate error metrics for training and testing sets
+train_rmse <- sqrt(mean((train_data$predicted_log_INCWAGE - train_data$log_INCWAGE)^2))
+train_mae <- mean(abs(train_data$predicted_log_INCWAGE - train_data$log_INCWAGE))
+train_r_squared <- 1 - sum((train_data$predicted_log_INCWAGE - train_data$log_INCWAGE)^2) /
+  sum((train_data$log_INCWAGE - mean(train_data$log_INCWAGE))^2)
+
+test_rmse <- sqrt(mean((test_data$predicted_log_INCWAGE - test_data$log_INCWAGE)^2))
+test_mae <- mean(abs(test_data$predicted_log_INCWAGE - test_data$log_INCWAGE))
+test_r_squared <- 1 - sum((test_data$predicted_log_INCWAGE - test_data$log_INCWAGE)^2) /
+  sum((test_data$log_INCWAGE - mean(test_data$log_INCWAGE))^2)
+
+# Create a table summarizing training and testing performance
+performance_metrics <- data.frame(
+  Metric = c("RMSE", "MAE", "R²"),
+  Training = c(train_rmse, train_mae, train_r_squared),
+  Testing = c(test_rmse, test_mae, test_r_squared)
+)
+
+kable(
+  performance_metrics,
+  format = "latex",
+  digits = 3,
+  booktabs = TRUE
+) %>%
+  kable_styling(latex_options = "striped", position = "center")
+
+
+
+```
+
+
+
+The selection of variables and model structure was based on theory and data characteristics. Given the right-skewed nature of the income distribution in @fig-income-distribution, the dependent variable is log-transformed (`log(INCWAGE)`) to improve model fit. Furthermore, to capture the nonlinear relationship between age and income evident in @fig-combined-visualizations, a quadratic term for age (`age^2`) is included in the model. Categorical variables, such as region, education level, race group, and gender, are represented using dummy variables. Each category is compared to a reference category, allowing the regression model to capture and interpret group-level differences.
+
+During the model selection process, an initial model included an interaction term between education level and race group (education_level:race_group), based on the association observed in @fig-Education-Race, while other variables remained unchanged. This interaction term aimed to evaluate income differences across racial groups at the same education level. However, most interaction terms were not statistically significant and provided minimal improvement to model fit metrics, such as adjusted $R^2$ and AIC. To simplify the model and enhance interpretability, this interaction term was excluded from the final specification.
+
+
+
+### Model Results
+
+
+
+```{r}
+#| echo: false
+#| eval: true
+#| label: tbl-modelresults
+#| tbl-cap: "Estimated coefficients of the final model"
+#| warning: false
+#| results: asis
+
+
+# Prepare data: Extract model coefficients and confidence intervals
+model_summary <- data.frame(
+  Coefficients = coef(final_model),                
+  `Lower CI` = confint(final_model)[, 1],
+  `Upper CI` = confint(final_model)[, 2]
+)
+
+# Generate table using knitr::kable
+kable(
+  model_summary,
+  format = "latex",        
+  digits = 4              
+)
+
+
+```
+
+
+
+
+
+
 
 
 
@@ -479,13 +606,53 @@ Weaknesses and next steps should also be included.
 
 # Additional data details
 
+```{r}
+
+```
+
+
 # Model details {#sec-model-details}
 
-## Posterior predictive check
 
-In @fig-ppcheckandposteriorvsprior-1 we implement a posterior predictive check. This shows...
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| label: fig-income-distribution
+#| fig-cap: "Distribution of Income: Original vs Log-transformed"
+#| fig-subcap: [
+#| "Income Distribution", 
+#| "Log-transformed Income Distribution"
+#| ]
+#| layout-ncol: 2
 
-In @fig-ppcheckandposteriorvsprior-2 we compare the posterior with the prior. This shows... 
+data <- data %>%
+  mutate(log_INCWAGE = log(INCWAGE))
+
+# Original income distribution plot (without scientific notation)
+p1 <- ggplot(data, aes(x = INCWAGE)) +
+  geom_histogram(bins = 50, fill = "steelblue", color = "white", alpha = 0.8) +
+  scale_x_continuous(labels = scales::comma) +  # Use comma formatting for axis
+  labs(
+    x = "Income (INCWAGE)",
+    y = "Frequency"
+  ) +
+  theme_minimal()
+
+# Log-transformed income distribution plot
+p2 <- ggplot(data, aes(x = log_INCWAGE)) +
+  geom_histogram(bins = 50, fill = "darkorange", color = "white", alpha = 0.8) +
+  labs(
+    x = "Log of Income (log(INCWAGE))",
+    y = "Frequency"
+  ) +
+  theme_minimal()
+
+p1
+p2
+
+```
+
 
 
 

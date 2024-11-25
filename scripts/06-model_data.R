@@ -11,27 +11,44 @@
 #### Workspace setup ####
 library(tidyverse)
 library(rstanarm)
+library(arrow)
+library(here)
+library(caret)
 
 #### Read data ####
-analysis_data <- read_csv("data/analysis_data/analysis_data.csv")
+data <- read_parquet(here("data", "01-analysis_data", "analysis_data.parquet"))
 
 ### Model data ####
-first_model <-
-  stan_glm(
-    formula = flying_time ~ length + width,
-    data = analysis_data,
-    family = gaussian(),
-    prior = normal(location = 0, scale = 2.5, autoscale = TRUE),
-    prior_intercept = normal(location = 0, scale = 2.5, autoscale = TRUE),
-    prior_aux = exponential(rate = 1, autoscale = TRUE),
-    seed = 853
-  )
 
+data <- data %>%
+  mutate(log_INCWAGE = log(INCWAGE))
+
+train_index <- createDataPartition(data$log_INCWAGE, p = 0.6, list = FALSE)  # 60% 训练集
+train_data <- data[train_index, ]
+test_data <- data[-train_index, ]
+
+
+# build a multiple linear regression model that includes a quadratic term for age
+final_model <- lm(
+  formula = log_INCWAGE ~ UHRSWORK + region + education_level + 
+    age + I(age^2) + gender + race_group, 
+  data = data
+)
+
+summary(final_model)
 
 #### Save model ####
 saveRDS(
-  first_model,
-  file = "models/first_model.rds"
+  final_model,
+  file = "models/final_model.rds"
 )
+
+saveRDS(train_data, file = "models/train_data.rds")
+saveRDS(test_data, file = "/test_data.rds")
+
+
+
+
+
 
 
