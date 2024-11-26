@@ -24,7 +24,7 @@ data <- read_parquet(here("data", "01-analysis_data", "analysis_data.parquet"))
 data <- data %>%
   mutate(log_INCWAGE = log(INCWAGE))
 
-train_index <- createDataPartition(data$log_INCWAGE, p = 0.6, list = FALSE)  # 60% 训练集
+train_index <- createDataPartition(data$log_INCWAGE, p = 0.6, list = FALSE)  
 train_data <- data[train_index, ]
 test_data <- data[-train_index, ]
 

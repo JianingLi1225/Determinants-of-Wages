@@ -11,7 +11,7 @@ The repo is structured as:
 -   `data/00-simulated_data` contains the raw data as obtained from X.
 -   `data/01-analysis_data` contains the cleaned dataset that was constructed.
 -   `model` Contains fitted models, along with the training and testing data used for the models.
--   `other` contains relevant literature, details about LLM chat interactions, and sketches.
+-   `other` contains relevant datasheet, literature, details about LLM chat interactions, and sketches.
 -   `paper` contains the files used to generate the paper, including the Quarto document and reference bibliography file, as well as the PDF of the paper. 
 -   `scripts` contains R scripts for data simulation, cleaning, and testing, along with steps for data downloading.
 

@@ -3,7 +3,7 @@ title: "Analysing the factors influencing the wages of the US workforce"
 subtitle: "Education as the Strongest Factor While Gender and Race Reflect Inequalities"
 author: 
   - Jianing Li
-thanks: "Code and data are available at: [https://github.com/RohanAlexander/starter_folder](https://github.com/RohanAlexander/starter_folder)."
+thanks: "Code and data are available at: https://github.com/JianingLi1225/Determinants-of-Wages.git"
 date: today
 date-format: long
 abstract: "This study uses a multiple linear regression model to analyze key factors influencing wages among the U.S. workforce, including education, age, gender, race, region, and hours worked. The results show that education is the strongest factor, with higher levels of education leading to significantly higher wages, while gender and race reveal notable disparities, with men and Asian workers earning the most. The study also finds a nonlinear relationship between age and wages, with region and hours worked playing smaller but significant roles. By identifying these drivers, the research provides evidence to inform policies aimed at reducing wage gaps and promoting fairer economic outcomes."
@@ -49,7 +49,7 @@ The estimand in this study is income. Specifically, it quantifies the effects of
 
 The study finds that education is the strongest determinant of income. Higher levels of education lead to significantly higher earnings, with those with a college degree earning much more than other groups. The relationship between age and earnings is non-linear, with earnings peaking between the ages of 40 and 50 before declining, reflecting the impact of the occupational life cycle. In addition, gender and race show disparities, with men and Asians earning the highest average incomes, while women and certain minority groups earn less. Region and hours worked also affect earnings, but their effects are relatively small. Regional income differences reflect differences in economic development and policy environments, while hours worked show diminishing returns beyond a certain point. The findings are important because they reveal the role of education, gender, and race in driving income inequality and provide clear directions for policy interventions. They also provide empirical support for strategies to reduce income inequality, such as improving the allocation of educational resources, promoting gender equality, and increasing economic opportunities for minority groups.
 
-This paper provides a comprehensive analysis of income inequality by examining its key drivers and impacts. @sec-data describes the dataset in detail, highlights its main features, and uses visualizations to present the analysis results. @sec-model focuses on the construction of the multiple linear regression model, validates its effectiveness, and presents the results of the analysis. @sec-discussion analyzes the research findings, explores the reasons behind the observed patterns, and offers policy recommendations to address income inequality. It also identifies the study’s limitations and suggests directions for future research. @sec-appendix provides additional details on the data, model, and methods of survey and sampling, offering more comprehensive support for the study.
+This paper provides a comprehensive analysis of income inequality by examining its key drivers and impacts. @sec-data describes the dataset in detail, highlights its main features, and uses visualizations to present the analysis results. @sec-model focuses on the construction of the multiple linear regression model, validates its effectiveness, and presents the results of the analysis. @sec-discussion analyzes the research findings, explores the reasons behind the observed patterns, and offers policy recommendations to address income inequality. It also identifies the study’s limitations and suggests directions for future research. @sec-appendix provides additional details on the model, and methods of survey and sampling, offering more comprehensive support for the study.
 
 
 
@@ -590,10 +590,6 @@ In summary, education level has the largest influence on income, followed by age
 
 
 
-
-
-
-
 # Discussion {#sec-discussion}
 
 This paper uses a multiple linear regression model to analyze key factors that influence income, including education, age, gender, race, region, and hours worked. The study is based on data from the 2023 American Community Survey (ACS), cleaned and processed for visualization and analysis. The model quantifies the impact of these variables and explores their significance, showing how personal characteristics and external factors shape the income distribution. Education, age, gender, and race are treated as endogenous variables, reflecting individual attributes, while region and work hours are considered exogenous, capturing the influence of external conditions on income. Through the analysis of these variables, the study provides insights into the roots of income inequality and offers evidence to inform policymaking.
@@ -637,10 +633,7 @@ The model also has limitations. With fewer variables, it cannot fully explain th
 # Appendix {-} {#sec-appendix}
 
 
-# Additional data details
-
-
-# Model details {#sec-model-details}
+## Model details {#sec-model-details}
 
 
 ```{r}
@@ -733,6 +726,8 @@ residuals_leverage
 ```
 
 The model assumptions were checked using @fig-check. First, the Residuals vs Fitted plot tests the linearity assumption, showing that residuals are randomly scattered around the fitted values without any clear pattern, indicating that the linear relationship is valid. Second, the Normal Q-Q plot checks for the normality of residuals. Most points align closely with the diagonal line, suggesting the residuals are approximately normally distributed, with only slight deviations at the tails. Third, the Scale-Location plot evaluates homoskedasticity, and the red line remains mostly flat, suggesting that the variance of the residuals is fairly consistent. Finally, the Residuals vs Leverage plot identifies potential outliers or high-leverage points, indirectly testing the independence of errors and the independence of variables. Most points have low leverage, with only a few high-leverage points that may need attention. Overall, the assumptions are largely met, though there are some limitations that could be addressed with further refinements in the analysis.
+
+
 
 
 \newpage
