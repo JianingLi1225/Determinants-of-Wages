@@ -1,11 +1,13 @@
 #### Preamble ####
-# Purpose: Models... [...UPDATE THIS...]
-# Author: Rohan Alexander [...UPDATE THIS...]
-# Date: 11 February 2023 [...UPDATE THIS...]
-# Contact: rohan.alexander@utoronto.ca [...UPDATE THIS...]
+# Purpose: Build a multiple linear regression model to explore the effect of each variable on wages
+# Author: Jianing Li
+# Date: 24 November 2024
+# Contact: lijianing.li@mail.utoronto.ca
 # License: MIT
-# Pre-requisites: [...UPDATE THIS...]
-# Any other information needed? [...UPDATE THIS...]
+# Pre-requisites: 
+#- The `tidyverse`， `caret`， `arrow` and `here` packages must be installed and loaded.
+#- 03-clean_data.R must have been run
+# Any other information needed? None
 
 
 #### Workspace setup ####

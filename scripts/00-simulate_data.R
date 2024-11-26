@@ -1,6 +1,6 @@
 #### Preamble ####
 # Purpose: Simulates a dataset to study the impact of several variables, 
-# including education, region, gender, and age, on wages. 
+# including education, working hour, region, gender, race and age, on wages. 
 # Author: Jianing Li
 # Date: 22 November 2024
 # Contact: lijianing.li@mail.utoronto.ca
