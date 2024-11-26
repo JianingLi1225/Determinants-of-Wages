@@ -28,6 +28,8 @@ library(knitr)
 library(kableExtra)
 library(car) 
 library(broom) 
+library(caret)
+
 ```
 
 
@@ -486,10 +488,6 @@ test_data <- readRDS(file = here::here("models", "test_data.rds"))
 #| warning: false
 #| results: asis
 
-library(caret)
-library(broom)
-library(knitr)
-library(kableExtra)
 
 # Predict on the training set
 train_data$predicted_log_INCWAGE <- predict(final_model, newdata = train_data)
@@ -630,7 +628,7 @@ The model also has limitations. With fewer variables, it cannot fully explain th
 
 \appendix
 
-# Appendix {-} {#sec-appendix}
+# Appendix  {#sec-appendix}
 
 
 ## Model details {#sec-model-details}
