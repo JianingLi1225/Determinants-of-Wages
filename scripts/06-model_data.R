@@ -10,7 +10,6 @@
 
 #### Workspace setup ####
 library(tidyverse)
-library(rstanarm)
 library(arrow)
 library(here)
 library(caret)
@@ -38,13 +37,21 @@ final_model <- lm(
 summary(final_model)
 
 #### Save model ####
+
 saveRDS(
   final_model,
-  file = "models/final_model.rds"
+  file = here("models", "final_model.rds")
 )
 
-saveRDS(train_data, file = "models/train_data.rds")
-saveRDS(test_data, file = "/test_data.rds")
+saveRDS(
+  train_data,
+  file = here("models", "train_data.rds")
+)
+
+saveRDS(
+  test_data,
+  file = here("models", "test_data.rds")
+)
 
 
 

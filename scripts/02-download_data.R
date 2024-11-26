@@ -9,8 +9,8 @@
 
 
 #### Workspace setup ####
-library(opendatatoronto)
-library(tidyverse)
+
+
 # [...UPDATE THIS...]
 
 #### Download data ####

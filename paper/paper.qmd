@@ -1,13 +1,12 @@
 ---
-title: "My title"
-subtitle: "My subtitle if needed"
+title: "Analysing the factors influencing the wages of the US workforce"
+subtitle: "Education as the Strongest Factor While Gender and Race Reflect Inequalities"
 author: 
-  - First author
-  - Another author
+  - Jianing Li
 thanks: "Code and data are available at: [https://github.com/RohanAlexander/starter_folder](https://github.com/RohanAlexander/starter_folder)."
 date: today
 date-format: long
-abstract: "First sentence. Second sentence. Third sentence. Fourth sentence."
+abstract: "This study uses a multiple linear regression model to analyze key factors influencing wages among the U.S. workforce, including education, age, gender, race, region, and hours worked. The results show that education is the strongest factor, with higher levels of education leading to significantly higher wages, while gender and race reveal notable disparities, with men and Asian workers earning the most. The study also finds a nonlinear relationship between age and wages, with region and hours worked playing smaller but significant roles. By identifying these drivers, the research provides evidence to inform policies aimed at reducing wage gaps and promoting fairer economic outcomes."
 format: pdf
 number-sections: true
 bibliography: references.bib
@@ -31,6 +30,8 @@ library(car)
 library(broom) 
 ```
 
+
+
 ```{r}
 #| echo: false
 #| warning: false
@@ -42,26 +43,21 @@ data <- read_parquet(here("data", "01-analysis_data", "analysis_data.parquet"))
 
 # Introduction
 
-Overview paragraph
+Income inequality is a persistent social and economic problem with significant implications for individual well-being and societal stability. Understanding how personal characteristics and external factors shape income distribution is essential to addressing its underlying causes. While many studies have explored income inequality, few have systematically analyzed the interaction of these factors. Additionally, existing research often lacks recent data that are both nationally representative and adaptable for diverse analyses. This study addresses these gaps using the 2023 sample from the IPUMS database, which allows users to customize variables and provides high-quality, comprehensive data. Leveraging this resource, the study identifies the main determinants of income inequality through a multiple linear regression model.
 
-Estimand paragraph
+The estimand in this study is income. Specifically, it quantifies the effects of education, age, gender, race, region, and hours worked on income. By measuring these effects, the study seeks to uncover the mechanisms driving income inequality and provide a framework for understanding how personal characteristics and external conditions interact to influence income distribution.
 
-Results paragraph
+The study finds that education is the strongest determinant of income. Higher levels of education lead to significantly higher earnings, with those with a college degree earning much more than other groups. The relationship between age and earnings is non-linear, with earnings peaking between the ages of 40 and 50 before declining, reflecting the impact of the occupational life cycle. In addition, gender and race show disparities, with men and Asians earning the highest average incomes, while women and certain minority groups earn less. Region and hours worked also affect earnings, but their effects are relatively small. Regional income differences reflect differences in economic development and policy environments, while hours worked show diminishing returns beyond a certain point. The findings are important because they reveal the role of education, gender, and race in driving income inequality and provide clear directions for policy interventions. They also provide empirical support for strategies to reduce income inequality, such as improving the allocation of educational resources, promoting gender equality, and increasing economic opportunities for minority groups.
 
-Why it matters paragraph
-
-Telegraphing paragraph: The remainder of this paper is structured as follows. @sec-data....
-
+This paper provides a comprehensive analysis of income inequality by examining its key drivers and impacts. @sec-data describes the dataset in detail, highlights its main features, and uses visualizations to present the analysis results. @sec-model focuses on the construction of the multiple linear regression model, validates its effectiveness, and presents the results of the analysis. @sec-discussion analyzes the research findings, explores the reasons behind the observed patterns, and offers policy recommendations to address income inequality. It also identifies the study’s limitations and suggests directions for future research. @sec-appendix provides additional details on the data, model, and methods of survey and sampling, offering more comprehensive support for the study.
 
 
 
 # Data {#sec-data}
 
 ## Data Overview
-Our data [@shelter]....
 
-We use the statistical programming language R [@citeR]....Our data [@shelter]....
-
+We used data from the IPUMS USA database [@ipums2024]. All analyses were conducted in R [@citeR]. Data simulation, testing, and cleaning were implemented using `tidyverse` [@tidyverse] and `testthat` [@testthat], with specific tasks performed using `here` [@here], `arrow` [@arrow], and `readr` [@readr]. Data manipulation was carried out with `dplyr` [@dplyr] and `reshape2` [@reshape2], while data visualization was done using `ggplot2` [@ggplot2], adjusted with `scales` [@scales]. Model training and performance evaluation were supported by `caret` [@caret], with model testing and analysis conducted using `broom` [@broom]. Code formatting and table presentation were handled by `knitr` [@knitr] and `kableExtra` [@kableExtra], respectively, while regression diagnostics and additional analysis were performed with `car` [@car].
 
 The IPUMS USA database [@ipums2024] is one of the largest collections of microdata from population censuses globally. Supported by organizations such as the National Institutes of Health and the University of Minnesota, it includes data from the American Community Survey (ACS) and other census programs. This resource provides detailed individual-level data, allowing researchers to address specific social, economic, and demographic questions. A key feature of IPUMS USA is its capacity to create customized datasets by selecting variables based on research needs, minimizing the inclusion of irrelevant data.
 
@@ -427,7 +423,7 @@ Overall, the distribution of education levels varies across racial groups. Asian
 
 
 
-# Model
+# Model {#sec-model}
 
 The goal of our modelling strategy is to quantify the contributions of key factors—such as weekly working hours, age (and its quadratic term), education level, region, gender, and race—to variations in income (log-transformed). By estimating the relative impact of these predictors, the model provides insights into potential social and demographic disparities in income.
 
@@ -598,34 +594,50 @@ In summary, education level has the largest influence on income, followed by age
 
 
 
-# Discussion
+# Discussion {#sec-discussion}
 
-## First discussion point {#sec-first-point}
+This paper uses a multiple linear regression model to analyze key factors that influence income, including education, age, gender, race, region, and hours worked. The study is based on data from the 2023 American Community Survey (ACS), cleaned and processed for visualization and analysis. The model quantifies the impact of these variables and explores their significance, showing how personal characteristics and external factors shape the income distribution. Education, age, gender, and race are treated as endogenous variables, reflecting individual attributes, while region and work hours are considered exogenous, capturing the influence of external conditions on income. Through the analysis of these variables, the study provides insights into the roots of income inequality and offers evidence to inform policymaking.
 
-If my paper were 10 pages, then should be be at least 2.5 pages. The discussion is a chance to show off what you know and what you learnt from all this. 
+## Education and Age: Core Drivers of Income
 
-## Second discussion point
+Education is a key factor influencing income, with a clear positive correlation between education level and earnings. Graduate degree holders earn significantly more, while a bachelor's degree also boosts income. However, those with only 1-2 years of college earn similar incomes to high school graduates, underscoring the importance of completing college. Higher education plays a crucial role in enhancing economic potential and securing high-paying jobs. Most income differences stem from variations in bachelor's, graduate, and doctoral education levels, while pre-college education has a smaller impact.
 
-Please don't use these as sub-heading labels - change them to be what your point actually is.
+Age also has a nonlinear impact on income. The model indicates that income peaks between ages 40 and 50 before gradually declining. The quadratic term captures this trend, reflecting how different stages of a career affect earnings. Early in their careers, individuals experience rapid income growth as they gain experience and promotions. In later stages, productivity declines, and income typically decreases as retirement approaches.
 
-## Third discussion point
+Education and age shape an individual's earning potential. These findings are valuable for career planning and offer guidance for policymakers. Individuals can enhance their competitiveness in the job market by pursuing a bachelor's degree or higher. Governments can increase education funding and provide financial aid to expand access to higher education. Additionally, support programs for those nearing retirement can help mitigate the impact of declining wages on their quality of life.
+
+## Gender and Race: Social Inequalities in Income Distribution
+
+Gender inequality in income distribution is evident. Studies show that men earn significantly more than women, even when controlling for education, age, and other factors. This disparity may stem from gender bias and occupational segregation. Women are often expected to take on more family responsibilities and face potential career interruptions due to childbirth [@gender]. Additionally, men are overrepresented in many high-paying professions, contributing to lower average wages for women [@blau2013trends].
+
+Racial disparities, on the other hand, highlight another form of structural inequality. Research indicates that Asians earn the highest incomes, followed by Whites, while Black individuals and those from "other" racial groups earn the least. These differences can be attributed to historical and systemic factors, such as racial discrimination in the labor market and the underrepresentation of minorities in high-paying industries [@race]. Educational disparities between racial groups, as shown in @fig-Education-Race, also contribute to these income gaps.
+
+Gender and race are exogenous factors, beyond individual control, and the wage disparities they cause reflect systemic inequality. Addressing the gender pay gap requires targeted policies, such as promoting pay transparency and increasing women's participation in high-paying industries. To reduce racial income disparities, policymakers can implement measures like providing education and employment support for minority groups, encouraging diversity hiring, and strictly enforcing anti-discrimination laws. Cultural change is also crucial; reducing biases against women and racial groups can help narrow wage gaps and promote fairness.
+
+## Region and Working Hours: External Environmental Impact on Income
+
+Region affects income. Studies show that incomes are higher in the Northeast and West and lowest in the Midwest. This may be due to differences in economic development and industry structures. Developed regions offer more high-paying jobs, while less developed areas have limited options. To reduce regional income gaps, the government can support industries in the Midwest and attract high-value sectors. Improving infrastructure and better allocating educational resources can also create more quality jobs in underdeveloped areas.
+
+Work hours are positively linked to income, but the returns diminish. Beyond 50 hours per week, income becomes more unstable. This suggests that working longer hours does not always lead to higher pay. Policies like overtime pay rules or limits on work hours may play a role. The government should introduce better labor laws, such as capping excessive work hours. Encouraging businesses to innovate and improve efficiency can reduce reliance on long hours. These measures can protect workers’ rights while promoting a fairer and healthier labor market.
+
 
 ## Weaknesses and next steps
 
-Weaknesses and next steps should also be included.
+The data used in this study has certain limitations. It relies on survey responses, which can include self-reporting bias. For example, respondents may overestimate or underestimate their income or working hours. Additionally, the original data collection only classified gender as male or female. Non-binary and transgender groups were not included, leaving some populations unrepresented. Future research could incorporate more diverse datasets, such as administrative records or third-party data, to improve accuracy. Using more detailed classifications could also better reflect overlooked groups and enhance inclusivity.
+
+Some important variables were not included in the analysis, such as industry classification. While industry significantly affects income, its complex structure and lack of standardized categories made it difficult to analyze. This exclusion might have introduced bias into the results. To simplify the model, smaller racial groups, such as Japanese, Indigenous, and multiracial individuals, were categorized as “Other.” Although this made the analysis manageable, it overlooked finer details in racial differences. Future studies could refine these categories and include more detailed variables when sample sizes allow.
+
+The model also has limitations. With fewer variables, it cannot fully explain the complexities of income distribution. This study is based on U.S. data from 2023, so its findings may not apply to other countries or time periods. Future research could include more variables, such as industry, family background, and regional policies, to improve explanatory power. Combining time-series and cross-country data would also help study income trends and disparities on a broader s1cale.
+
 
 \newpage
 
 \appendix
 
-# Appendix {-}
+# Appendix {-} {#sec-appendix}
 
 
 # Additional data details
-
-```{r}
-
-```
 
 
 # Model details {#sec-model-details}
@@ -719,6 +731,7 @@ scale_location
 residuals_leverage
 
 ```
+
 The model assumptions were checked using @fig-check. First, the Residuals vs Fitted plot tests the linearity assumption, showing that residuals are randomly scattered around the fitted values without any clear pattern, indicating that the linear relationship is valid. Second, the Normal Q-Q plot checks for the normality of residuals. Most points align closely with the diagonal line, suggesting the residuals are approximately normally distributed, with only slight deviations at the tails. Third, the Scale-Location plot evaluates homoskedasticity, and the red line remains mostly flat, suggesting that the variance of the residuals is fairly consistent. Finally, the Residuals vs Leverage plot identifies potential outliers or high-leverage points, indirectly testing the independence of errors and the independence of variables. Most points have low leverage, with only a few high-leverage points that may need attention. Overall, the assumptions are largely met, though there are some limitations that could be addressed with further refinements in the analysis.
 
 
