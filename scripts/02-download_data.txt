@@ -1,0 +1,40 @@
+
+
+Steps to Download Data from IPUMS USA
+
+1. Go to IPUMS USA
+Go to the IPUMS USA website (https://usa.ipums.org/usa/).
+Click on "SIGN UP" or "CREATE AN ACCOUNT" on the homepage.
+Click on "GET DATA" to begin the data extraction process.
+
+2. Select Sample
+Go to the "select sample" section.
+Select "USA SAMPLES".
+Uncheck the "DEFAULT SAMPLE FROM EACH YEAR" option to customize your sample selection.
+Select the "2023 ACS" (American Community Survey) as the sample for this study.
+Click "SUBMIT SAMPLE SELECTIONS".
+
+3. Choose Variables
+Proceed to the "select variables" section.
+Click "SEARCH". In "BASIC SEARCH", search for variable names without changing the default options, then click "SEARCH" again. Locate the variable names and click the "+" symbol next to each one. Repeat this step 8 times to include the variables "statefip", "sex", "age", "race", "educ", "empstat", "uhrswork", and "incwage".
+
+4. Review Variable Selection
+Once the desired variables are added, click on "VIEW CART" to review your selections.
+Ensure all necessary variables are included for your analysis. Remove any default variables that are not needed.
+
+5. Create Data Extract
+Click on "CREATE DATA EXTRACT" to finalize your request.
+Review the summary of your sample and variables.
+Change the "DATA FORMAT" to "CSV" for compatibility with analysis tools.
+
+6. Submit Extract Request
+Submit your request for processing.
+Wait for the processing to complete.
+
+7. Download Data
+Click on the green "DOWNLOAD CSV" button.
+Save the file locally.
+On the download page, find the "CODEBOOK" and click "BASIC" to view the meanings of the variables.
+
+
+
