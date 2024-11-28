@@ -127,7 +127,7 @@ The sample of the cleaned dataset is shown in @tbl-datasummary, including the fo
 
 
 
-## Data Results
+## Data Results1
 
 
 
@@ -432,7 +432,7 @@ The goal of our modelling strategy is to quantify the contributions of key facto
 Here we briefly describe the multiple linear regression model used to investigate these relationships. The model captures both linear and nonlinear effects (e.g., through the quadratic term for age), and all categorical variables are treated as factors to account for group-level differences. 
 
 
-## Model set-up
+## Model Set-up
 
 This study use Multiple Linear Regression (MLR) to model the relationship between income and various predictors, implemented using R's `lm` function. The dataset is divided into training and testing sets using the `createDataPartition` function from the `caret` package, with 60% allocated for model training and parameter estimation and 40% for testing to evaluate predictive performance. 
 
@@ -459,7 +459,7 @@ The final model is displayed below:
 
 
 
-### Model justification
+### Model Justification
 
 
 ```{r}
@@ -615,7 +615,7 @@ Region affects income. Studies show that incomes are higher in the Northeast and
 Work hours are positively linked to income, but the returns diminish. Beyond 50 hours per week, income becomes more unstable. This suggests that working longer hours does not always lead to higher pay. Policies like overtime pay rules or limits on work hours may play a role. The government should introduce better labor laws, such as capping excessive work hours. Encouraging businesses to innovate and improve efficiency can reduce reliance on long hours. These measures can protect workers’ rights while promoting a fairer and healthier labor market.
 
 
-## Weaknesses and next steps
+## Weaknesses and Next Steps
 
 The data used in this study has certain limitations. It relies on survey responses, which can include self-reporting bias. For example, respondents may overestimate or underestimate their income or working hours. Additionally, the original data collection only classified gender as male or female. Non-binary and transgender groups were not included, leaving some populations unrepresented. Future research could incorporate more diverse datasets, such as administrative records or third-party data, to improve accuracy. Using more detailed classifications could also better reflect overlooked groups and enhance inclusivity.
 
@@ -631,7 +631,7 @@ The model also has limitations. With fewer variables, it cannot fully explain th
 # Appendix  {#sec-appendix}
 
 
-## Model details {#sec-model-details}
+## Model Details {#sec-model-details}
 
 
 ```{r}
