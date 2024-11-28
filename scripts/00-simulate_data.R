@@ -1,6 +1,6 @@
 #### Preamble ####
-# Purpose: Simulates a dataset to study the impact of several variables, 
-# including education, working hour, region, gender, race and age, on wages. 
+# Purpose: Simulates a dataset to study the impact of several variables,
+# including education, working hour, region, gender, race and age, on wages.
 # Author: Jianing Li
 # Date: 22 November 2024
 # Contact: lijianing.li@mail.utoronto.ca
@@ -30,8 +30,8 @@ region <- sample(c("Northeast", "South", "Midwest", "West"), n_samples, replace 
 # Simulate detailed education levels
 education_level <- sample(
   c("Below_High_School", "High_School", "Some_College", "Bachelor", "Above_Bachelor"),
-  n_samples, 
-  replace = TRUE, 
+  n_samples,
+  replace = TRUE,
   prob = c(0.25, 0.4, 0.2, 0.1, 0.05)
 )
 
@@ -73,13 +73,15 @@ simulated_data <- data.frame(
 
 #  Clean simulated data
 cleaned_data <- simulated_data %>%
-  filter(age >= 18 & age <= 65) %>%  # Keep working age (18-65)
-  filter(UHRSWORK > 0) %>%  # Remove invalid work hours
-  filter(INCWAGE > 0) %>%  # Remove invalid wages
+  filter(age >= 18 & age <= 65) %>% # Keep working age (18-65)
+  filter(UHRSWORK > 0) %>% # Remove invalid work hours
+  filter(INCWAGE > 0) %>% # Remove invalid wages
   mutate(
     region = factor(region),
-    education_level = factor(education_level, levels = c("Below_High_School", "High_School", "Some_College", 
-                                                         "Bachelor", "Above_Bachelor")),
+    education_level = factor(education_level, levels = c(
+      "Below_High_School", "High_School", "Some_College",
+      "Bachelor", "Above_Bachelor"
+    )),
     gender = factor(gender),
     race_group = factor(race_group, levels = c("Asian", "Black", "Other", "White"))
   )
@@ -87,3 +89,4 @@ cleaned_data <- simulated_data %>%
 
 #### Save data ####
 write_csv(cleaned_data, here("data", "00-simulated_data", "simulated_data.csv"))
+

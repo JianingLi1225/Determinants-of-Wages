@@ -9,6 +9,7 @@ date-format: long
 abstract: "This study uses a multiple linear regression model to analyze key factors influencing wages among the U.S. workforce, including education, age, gender, race, region, and hours worked. The results show that education is the strongest factor, with higher levels of education leading to significantly higher wages, while gender and race reveal notable disparities, with men and Asian workers earning the most. The study also finds a nonlinear relationship between age and wages, with region and hours worked playing smaller but significant roles. By identifying these drivers, the research provides evidence to inform policies aimed at reducing wage gaps and promoting fairer economic outcomes."
 format: pdf
 number-sections: true
+toc: true
 bibliography: references.bib
 ---
 
@@ -30,6 +31,7 @@ library(car)
 library(broom) 
 library(caret)
 library(modelsummary)
+library(styler)
 
 
 ```
@@ -45,7 +47,7 @@ data <- read_parquet(here("data", "01-analysis_data", "analysis_data.parquet"))
 
 ```
 
-# Introduction
+# Introduction {#sec-Introduction}
 
 Income inequality is a persistent social and economic problem with significant implications for individual well-being and societal stability. Understanding how personal characteristics and external factors shape income distribution is essential to addressing its underlying causes. While many studies have explored income inequality, few have systematically analyzed the interaction of these factors. Additionally, existing research often lacks recent data that are both nationally representative and adaptable for diverse analyses. This study addresses these gaps using the 2023 sample from the IPUMS database, which allows users to customize variables and provides high-quality, comprehensive data. Leveraging this resource, the study identifies the main determinants of income inequality through a multiple linear regression model.
 
@@ -56,12 +58,11 @@ The study finds that education is the strongest determinant of income. Higher le
 This paper provides a comprehensive analysis of income inequality by examining its key drivers and impacts. @sec-data describes the dataset in detail, highlights its main features, and uses visualizations to present the analysis results. @sec-model focuses on the construction of the multiple linear regression model, validates its effectiveness, and presents the results of the analysis. @sec-discussion analyzes the research findings, explores the reasons behind the observed patterns, and offers policy recommendations to address income inequality. It also identifies the study’s limitations and suggests directions for future research. @sec-appendix provides additional details on the model, and methods of survey and sampling, offering more comprehensive support for the study.
 
 
-
 # Data {#sec-data}
 
 ## Data Overview
 
-We used data from the IPUMS USA database [@ipums2024]. All analyses were conducted in R [@citeR]. Data simulation, testing, and cleaning were implemented using `tidyverse` [@tidyverse] and `testthat` [@testthat], with specific tasks performed using `here` [@here], `arrow` [@arrow], and `readr` [@readr]. Data manipulation was carried out with `dplyr` [@dplyr] and `reshape2` [@reshape2], while data visualization was done using `ggplot2` [@ggplot2], adjusted with `scales` [@scales]. Model training and performance evaluation were supported by `caret` [@caret], with model testing and analysis conducted using `broom` [@broom]. Model summaries were generated using the `modelsummary` package [@modelsummary]. Code formatting and table presentation were handled by `knitr` [@knitr] and `kableExtra` [@kableExtra], respectively, while regression diagnostics and additional analysis were performed with `car` [@car].
+We used data from the IPUMS USA database [@ipums2024]. All analyses were conducted in R [@citeR]. Data simulation, testing, and cleaning were implemented using `tidyverse` [@tidyverse] and `testthat` [@testthat], with specific tasks performed using `here` [@here], `arrow` [@arrow], and `readr` [@readr]. Data manipulation was carried out with `dplyr` [@dplyr] and `reshape2` [@reshape2], while data visualization was done using `ggplot2` [@ggplot2], adjusted with `scales` [@scales]. Model training and performance evaluation were supported by `caret` [@caret], with model testing and analysis conducted using `broom` [@broom]. Model summaries were generated using the `modelsummary` package [@modelsummary]. Code style was standardized using `styler` [@styler]. Code formatting and table presentation were handled by `knitr` [@knitr] and `kableExtra` [@kableExtra], respectively, while regression diagnostics and additional analysis were performed with `car` [@car].
 
 The IPUMS USA database [@ipums2024] is one of the largest collections of microdata from population censuses globally. Supported by organizations such as the National Institutes of Health and the University of Minnesota, it includes data from the American Community Survey (ACS) and other census programs. This resource provides detailed individual-level data, allowing researchers to address specific social, economic, and demographic questions. A key feature of IPUMS USA is its capacity to create customized datasets by selecting variables based on research needs, minimizing the inclusion of irrelevant data.
 
@@ -414,7 +415,7 @@ The final model is displayed below:
 
 
 
-### Model Justification
+## Model Justification
 
 
 ```{r}
@@ -495,7 +496,7 @@ During the model selection process, an initial model included an interaction ter
 The evaluation of the final model's performance was conducted on both training and testing datasets. As shown in tbl-test, the RMSE and MAE values are slightly higher for the testing data compared to the training data (0.786 vs. 0.773 for RMSE, and 0.568 vs. 0.543 for MAE), reflecting a modest decline in predictive accuracy when applied to unseen data. Similarly, the $R^2$ values are 0.488 for the training set and 0.468 for the testing set, indicating that the model captures a moderate proportion of the variability in the log-transformed income. Additionally, all variables included in the final model were statistically significant, with $p$-values below 0.05, further supporting the robustness of the selected predictors. Overall, the final model achieves a practical balance between complexity, interpretability, and predictive performance.
 
 
-### Model Results
+## Model Results
 
 
 
@@ -794,7 +795,7 @@ To capture changes in the labor market, the survey is conducted in three waves, 
 The budget is allocated based on the importance of each task. Approximately $40,000 is spent on online ads to reach a wide audience. Another $20,000 is used for RDD to connect with groups less accessible online, such as older adults and rural residents. An additional $15,000 is set aside for incentives to increase completion rates. The remaining $25,000 is allocated for data cleaning, validation, and multi-wave integration. This ensures efficient resource use and reliable survey outcomes.
 
 
-## Idealized survey
+## Idealized Survey
 
 
 The idealized survey questionnaire can be accessed via the following link： https://forms.gle/Aw9cjdqL9tB9bNHr8

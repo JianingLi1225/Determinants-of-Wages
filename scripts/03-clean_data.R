@@ -4,7 +4,7 @@
 # Date: 22 November 2024
 # Contact: lijianing.li@mail.utoronto.ca
 # License: MIT
-# Pre-requisites: 
+# Pre-requisites:
 # - The `tidyverse`, `dplyr`，`arrow` and `here` packages must be installed and loaded.
 # - The steps outlined in 02-download_data.R this document must be followed.
 # Any other information needed? Make sure you are in the `Determinants-of-Wages` rproj
@@ -26,7 +26,7 @@ raw_data <- raw_data %>%
 
 # Clean the data
 cleaned_data <- raw_data %>%
-  filter(!is.na(STATEFIP) & STATEFIP %in% c(1:56)) %>%  # Keep valid state codes
+  filter(!is.na(STATEFIP) & STATEFIP %in% c(1:56)) %>% # Keep valid state codes
   mutate(region = case_when(
     STATEFIP %in% c(9, 23, 25, 33, 34, 36, 42, 44, 50) ~ "Northeast",
     STATEFIP %in% c(17, 18, 19, 20, 26, 27, 29, 31, 38, 39, 46, 55) ~ "Midwest",
@@ -34,19 +34,19 @@ cleaned_data <- raw_data %>%
     STATEFIP %in% c(4, 6, 8, 15, 16, 30, 32, 35, 41, 49, 53, 56) ~ "West"
   )) %>%
   filter(!is.na(region)) %>%
-  filter(!EDUC %in% c(0, 99)) %>%  # Remove invalid education values
+  filter(!EDUC %in% c(0, 99)) %>% # Remove invalid education values
   mutate(education_level = case_when(
-    EDUC %in% c(0, 1, 2, 3, 4, 5) ~ "Below_High_School",  
-    EDUC == 6 ~ "High_School",  
-    EDUC %in% c(7, 8) ~ "Some_College",  
-    EDUC == 10 ~ "Bachelor",  
-    EDUC == 11 ~ "Above_Bachelor"  
+    EDUC %in% c(0, 1, 2, 3, 4, 5) ~ "Below_High_School",
+    EDUC == 6 ~ "High_School",
+    EDUC %in% c(7, 8) ~ "Some_College",
+    EDUC == 10 ~ "Bachelor",
+    EDUC == 11 ~ "Above_Bachelor"
   )) %>%
-  mutate(age = ifelse(AGE == 999, NA, AGE)) %>%  # Replace 999 with NA
-  filter(!is.na(age) & age >= 18 & age <= 65) %>%  # Keep working age (18-65)
-  filter(!(UHRSWORK %in% c(0, 99))) %>%  # Remove invalid work hours
-  filter(!(INCWAGE %in% c(999999, 999998)) & INCWAGE > 0) %>%  # Remove invalid wages
-  filter(SEX %in% c(1, 2)) %>%  # Keep valid gender values
+  mutate(age = ifelse(AGE == 999, NA, AGE)) %>% # Replace 999 with NA
+  filter(!is.na(age) & age >= 18 & age <= 65) %>% # Keep working age (18-65)
+  filter(!(UHRSWORK %in% c(0, 99))) %>% # Remove invalid work hours
+  filter(!(INCWAGE %in% c(999999, 999998)) & INCWAGE > 0) %>% # Remove invalid wages
+  filter(SEX %in% c(1, 2)) %>% # Keep valid gender values
   mutate(gender = case_when(
     SEX == 1 ~ "Male",
     SEX == 2 ~ "Female"
@@ -54,10 +54,10 @@ cleaned_data <- raw_data %>%
   mutate(race_group = case_when(
     RACE == 1 ~ "White",
     RACE == 2 ~ "Black",
-    RACE %in% c(3, 7, 8, 9) ~ "Other",  
+    RACE %in% c(3, 7, 8, 9) ~ "Other",
     RACE %in% c(4, 5, 6) ~ "Asian"
   )) %>%
-  filter(EMPSTAT == 1) %>%  # Keep only employed individuals
+  filter(EMPSTAT == 1) %>% # Keep only employed individuals
   select(-STATEFIP, -RACE, -EDUC, -EMPSTAT, -SEX, -AGE)
 
 # Randomly sample data
