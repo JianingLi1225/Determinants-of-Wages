@@ -74,7 +74,7 @@ This study utilizes sample data from the 2023 ACS. The dataset is based on a 1% 
 
 Data collection for the ACS involved structured questionnaires covering a wide range of topics, such as demographics, education, employment, and income. For example, UHRSWORK (usual hours worked per week) captures labor input based on respondents’ reports of their average weekly work hours. The smallest geographic unit in the dataset is the Public Use Microdata Area (PUMA), which contains at least 100,000 residents and falls within state boundaries. This structure protects respondent privacy while supporting regional analysis.
 
-While the ACS methodology ensures data reliability and extensive coverage, variables like income and work hours rely on self-reported responses, which may introduce minor inaccuracies. Nonetheless, the use of sampling weights and robust design make the dataset a reliable foundation for studying wage income and its associated factors. A detailed explanation of the survey methodology and sampling design is provided in the appendix.
+While the ACS methodology ensures data reliability and extensive coverage, variables like income and work hours rely on self-reported responses, which may introduce minor inaccuracies. Nonetheless, the use of sampling weights and robust design make the dataset a reliable foundation for studying wage income and its associated factors. 
 
 ## Dataset Description
 
@@ -621,7 +621,7 @@ The data used in this study has certain limitations. It relies on survey respons
 
 Some important variables were not included in the analysis, such as industry classification. While industry significantly affects income, its complex structure and lack of standardized categories made it difficult to analyze. This exclusion might have introduced bias into the results. To simplify the model, smaller racial groups, such as Indigenous, and multiracial individuals, were categorized as “Other.” Although this made the analysis manageable, it overlooked finer details in racial differences. Future studies could refine these categories and include more detailed variables when sample sizes allow.
 
-The model also has limitations. With fewer variables, it cannot fully explain the complexities of income distribution. This study is based on U.S. data from 2023, so its findings may not apply to other countries or time periods. Future research could include more variables, such as industry, family background, and regional policies, to improve explanatory power. Combining time-series and cross-country data would also help study income trends and disparities on a broader s1cale.
+The model also has limitations. With fewer variables, it cannot fully explain the complexities of income distribution. This study is based on U.S. data from 2023, so its findings may not apply to other countries or time periods. Future research could include more variables, such as industry, family background, and regional policies, to improve explanatory power. Combining time-series and cross-country data would also help study income trends and disparities on a broader scale.
 
 
 \newpage
@@ -724,6 +724,123 @@ residuals_leverage
 ```
 
 The model assumptions were checked using @fig-check. First, the Residuals vs Fitted plot tests the linearity assumption, showing that residuals are randomly scattered around the fitted values without any clear pattern, indicating that the linear relationship is valid. Second, the Normal Q-Q plot checks for the normality of residuals. Most points align closely with the diagonal line, suggesting the residuals are approximately normally distributed, with only slight deviations at the tails. Third, the Scale-Location plot evaluates homoskedasticity, and the red line remains mostly flat, suggesting that the variance of the residuals is fairly consistent. Finally, the Residuals vs Leverage plot identifies potential outliers or high-leverage points, indirectly testing the independence of errors and the independence of variables. Most points have low leverage, with only a few high-leverage points that may need attention. Overall, the assumptions are largely met, though there are some limitations that could be addressed with further refinements in the analysis.
+
+
+## Idealized Methodology
+
+### Overview
+
+This survey is designed to collect data on factors influencing wages across the United States. The focus is on education, gender, race, region, and working hours. The budget is $100,000, covering sampling design, respondent recruitment, data collection, and quality control. The goal is to ensure high-quality, representative data. The results will help develop fair economic policies, reduce wage gaps, and promote equity.
+
+### Sampling Approach
+
+The survey uses stratified random sampling to ensure a comprehensive and representative sample. Respondents are grouped by gender, education, race, and geographic region. Gender categories include male, female, and non-binary/transgender. Education is grouped into high school or below, some college, and bachelor’s degree or above. Race categories are White, Black, Asian, and Other (e.g., mixed or minority groups). Geographic regions include Northeast, Midwest, South, and West. Exact age is collected as a continuous variable. The total sample size is 5,000, with proportional representation for each group. This method ensures diversity and provides a strong foundation for analysis.
+
+### Recruitment
+
+The survey combines online and offline recruitment methods to reach diverse participants. Online ads are placed on platforms like Google, Facebook, and LinkedIn. These ads target individuals based on occupation and location. The content emphasizes privacy and the importance of participation, with messages like, “Take 3 minutes to help uncover the key drivers of wage differences.” This approach is effective for urban residents, younger people, and those with higher education levels.
+
+For groups less likely to respond to online ads, such as older adults and rural residents, Random Digit Dialing (RDD) is used. Trained interviewers make calls across all states and record responses directly. This ensures inclusivity by reaching populations underrepresented in online recruitment.
+
+To encourage participation, respondents are offered incentives. For every 100 surveys completed, one respondent is randomly chosen to receive a $5-$10 gift card. This incentive is explained at the start of the survey to motivate completion.
+
+### Data Collection and Survey Design
+
+Data is collected primarily through Google Forms. Respondents can complete the survey on a computer or mobile device. Each Google account is limited to one submission to prevent duplicates. Responses from RDD participants are manually entered into the same system for consistency.
+
+The survey includes attention check questions to ensure valid responses. For example, a question may ask respondents to “Select ‘Other’ to confirm you are paying attention.” Responses failing these checks are marked invalid. This improves data quality without adding extra burden to respondents.
+
+### Data Validation and Quality Control
+
+The survey implements several measures to ensure data accuracy and representativeness. Post-stratification weighting adjusts the sample to align with U.S. population characteristics. Logical checks identify and remove inconsistent responses, such as reports of zero work hours with high income. Duplicate submissions are identified and removed using account and IP address information. Missing data for open-ended questions, such as income, is handled using imputation. These steps improve the reliability and quality of the data.
+
+### Multi-Wave Data Collection and Aggregation
+
+To capture changes in the labor market, the survey is conducted in three waves, two months apart. This approach tracks trends and seasonal variations. After each round, data is reviewed and aggregated using weighted averages. This reduces random fluctuations and provides more accurate results for analysis.
+
+### Budget Allocation
+
+The budget is allocated based on the importance of each task. Approximately $40,000 is spent on online ads to reach a wide audience. Another $20,000 is used for RDD to connect with groups less accessible online, such as older adults and rural residents. An additional $15,000 is set aside for incentives to increase completion rates. The remaining $25,000 is allocated for data cleaning, validation, and multi-wave integration. This ensures efficient resource use and reliable survey outcomes.
+
+
+## Idealized survey
+
+
+The idealized survey questionnaire can be accessed via the following link： https://forms.gle/Aw9cjdqL9tB9bNHr8
+
+### Survey Questions
+
+Thank you for participating in this survey! This study aims to understand the factors influencing wages in the United States. Your responses will remain strictly confidential and will only be used for research purposes. The survey takes approximately 3-5 minutes to complete.
+
+As a token of appreciation, participants who complete the survey will have the chance to win a $5-$10 gift card. One respondent out of every 100 will be randomly selected to receive this reward.
+
+For Questions or Concerns, Please Contact:
+
+Jianing Li  
+Email: lijianing.li@mail.utoronto.ca  
+
+1. What is your age?  
+   - Open-ended (numeric input)
+
+2. What is your gender?  
+   - Male  
+   - Female  
+   - Non-binary/Transgender  
+   - Prefer not to say  
+   - Other  
+
+3. What is your highest level of education?  
+   - High school or below  
+   - Some college  
+   - Bachelor’s degree  
+   - Master’s degree or above  
+
+4. What is your race or ethnicity?  
+   - White  
+   - Black  
+   - Asian  
+   - Other (please specify): ________  
+
+5. Which U.S. state do you currently reside in?  
+   - Dropdown list of all 50 states  
+
+6. To confirm you are paying attention, please select "Other" as your answer.  
+   - Male  
+   - Female  
+   - Other  
+   - Prefer not to say  
+
+7. What is your primary employment status?  
+   - Full-time  
+   - Part-time  
+   - Self-employed  
+   - Unemployed  
+   - Retired  
+   - Student  
+
+8. How many hours do you typically work per week?  
+   - Open-ended (numeric input)
+
+9. What is your annual pre-tax wage or salary income?  
+   - Open-ended (numeric input)
+
+10. How many years have you been working in your current field or profession?  
+   - Open-ended (numeric input)
+
+11. What is the primary reason you chose your current occupation?  
+   - Interest/passion  
+   - Financial stability  
+   - Family influence  
+   - Availability of jobs in the area  
+   - Other (please specify): ________  
+
+If you would like to participate in the reward draw, please provide your email address.  
+   - Open-ended  
+
+Thank You!  
+Thank you for your time and participation in this survey. Your responses are valuable to our research.  
+
+Good luck with the reward draw!
 
 
 
