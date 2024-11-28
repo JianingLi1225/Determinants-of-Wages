@@ -17,5 +17,5 @@ The repo is structured as:
 
 ## Statement on LLM usage
 
- Some of the code was completed with the assistance of ChatGPT-4, including code for data cleaning, testing, simulation, generating charts for the Data section, parts of the code in the Model section, and code for testing model assumptions in the appendix. The entire chat history is available in inputs/llms/usage.txt.
-
+ 
+Some of the code was completed with the assistance of ChatGPT-4, including code for data cleaning, testing, simulation, generating charts for the Data section, parts of the code in the Model section, code for testing model assumptions in the appendix, and code for presenting model results. The entire chat history is available in inputs/llms/usage.txt.
