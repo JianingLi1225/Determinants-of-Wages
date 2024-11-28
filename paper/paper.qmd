@@ -1,6 +1,6 @@
 ---
 title: "Analysing the factors influencing the wages of the US workforce"
-subtitle: "Education as the Strongest Factor While Gender and Race Reflect Inequalities"
+subtitle: "Higher Education and Male Gender as Key Determinants of Wage Increases Controlling for Region and Race"
 author: 
   - Jianing Li
 thanks: "Code and data are available at: https://github.com/JianingLi1225/Determinants-of-Wages.git"
@@ -29,6 +29,8 @@ library(kableExtra)
 library(car) 
 library(broom) 
 library(caret)
+library(modelsummary)
+
 
 ```
 
@@ -59,75 +61,27 @@ This paper provides a comprehensive analysis of income inequality by examining i
 
 ## Data Overview
 
-We used data from the IPUMS USA database [@ipums2024]. All analyses were conducted in R [@citeR]. Data simulation, testing, and cleaning were implemented using `tidyverse` [@tidyverse] and `testthat` [@testthat], with specific tasks performed using `here` [@here], `arrow` [@arrow], and `readr` [@readr]. Data manipulation was carried out with `dplyr` [@dplyr] and `reshape2` [@reshape2], while data visualization was done using `ggplot2` [@ggplot2], adjusted with `scales` [@scales]. Model training and performance evaluation were supported by `caret` [@caret], with model testing and analysis conducted using `broom` [@broom]. Code formatting and table presentation were handled by `knitr` [@knitr] and `kableExtra` [@kableExtra], respectively, while regression diagnostics and additional analysis were performed with `car` [@car].
+We used data from the IPUMS USA database [@ipums2024]. All analyses were conducted in R [@citeR]. Data simulation, testing, and cleaning were implemented using `tidyverse` [@tidyverse] and `testthat` [@testthat], with specific tasks performed using `here` [@here], `arrow` [@arrow], and `readr` [@readr]. Data manipulation was carried out with `dplyr` [@dplyr] and `reshape2` [@reshape2], while data visualization was done using `ggplot2` [@ggplot2], adjusted with `scales` [@scales]. Model training and performance evaluation were supported by `caret` [@caret], with model testing and analysis conducted using `broom` [@broom]. Model summaries were generated using the `modelsummary` package [@modelsummary]. Code formatting and table presentation were handled by `knitr` [@knitr] and `kableExtra` [@kableExtra], respectively, while regression diagnostics and additional analysis were performed with `car` [@car].
 
 The IPUMS USA database [@ipums2024] is one of the largest collections of microdata from population censuses globally. Supported by organizations such as the National Institutes of Health and the University of Minnesota, it includes data from the American Community Survey (ACS) and other census programs. This resource provides detailed individual-level data, allowing researchers to address specific social, economic, and demographic questions. A key feature of IPUMS USA is its capacity to create customized datasets by selecting variables based on research needs, minimizing the inclusion of irrelevant data.
 
-For this study, data from the 2023 ACS sample in IPUMS USA were used. The selected variables include STATEFIP (state code), SEX (gender), AGE (age), RACE (race), EDUC (educational attainment), EMPSTAT (employment status), UHRSWORK (usual hours worked per week), and INCWAGE (wage and salary income). These variables cover geographic location, demographic characteristics, education, and employment conditions, providing a broad basis for examining factors influencing wage income.
+For this study, data from the 2023 ACS sample in IPUMS USA were used. The selected variables include STATEFIP (state code), SEX (gender), AGE (age), RACE (race), EDUC (educational attainment), EMPSTAT (employment status), UHRSWORK (usual hours worked per week), and INCWAGE (wage and salary income). These variables cover geographic location, demographic characteristics, education, and employment conditions, providing a broad basis for examining factors influencing wage income. The cleaned dataset is presented in @tbl-datasummary, along with detailed descriptions of variable definitions and construction methods, which are thoroughly explained in @sec-data.
 
 Other databases, such as IPUMS CPS [@ipums_cps2024] and the National Longitudinal Surveys [@nlsy1979], were considered but deemed less suitable for this analysis. IPUMS CPS provides detailed labor market data but has a smaller sample size and limited geographic detail. The National Longitudinal Surveys track specific population groups over time but lack broad representation, making them less ideal for cross-sectional studies. In contrast, the 2023 ACS data in IPUMS USA offers larger population coverage and a diverse range of variables, making it a better choice for analyzing wage determinants.
 
 
 ## Measurement
 	
-This study utilizes sample data from the 2023 ACS. The dataset is based on a 1% random national sample, ensuring broad representativeness. It includes individuals living in private households as well as those in group quarters, such as student dormitories and care facilities. Weights were applied to the data to account for potential biases introduced by the sampling design and nonresponse.
+This study uses sample data from the 2023 American Community Survey (ACS). The dataset is based on a 1% random national sample, ensuring broad representativeness. The sample includes individuals living in private households and those in group quarters, such as student dormitories, correctional facilities, and care homes. Weights are applied to the data to reduce biases caused by the sampling design and nonresponse. This improves the generalizability of the results. The smallest geographic unit in the dataset is the Public Use Microdata Area (PUMA). Each PUMA includes at least 100,000 residents and is contained within state boundaries. This design anonymizes respondents’ locations while enabling regional analysis.
 
-Data collection for the ACS involved structured questionnaires covering a wide range of topics, such as demographics, education, employment, and income. For example, UHRSWORK (usual hours worked per week) captures labor input based on respondents’ reports of their average weekly work hours. The smallest geographic unit in the dataset is the Public Use Microdata Area (PUMA), which contains at least 100,000 residents and falls within state boundaries. This structure protects respondent privacy while supporting regional analysis.
+The ACS collects data using multiple methods. These include mailed questionnaires, online submissions, and in-person or telephone interviews. The surveys cover a wide range of topics, such as demographics, education, employment, and income. For example, wage income is recorded by asking respondents to report their total pre-tax earnings from wages, salaries, tips, and other sources over the past 12 months. Similarly, the variable UHRSWORK (usual hours worked per week) measures labor input based on respondents’ self-reported average weekly work hours during the survey.
 
-While the ACS methodology ensures data reliability and extensive coverage, variables like income and work hours rely on self-reported responses, which may introduce minor inaccuracies. Nonetheless, the use of sampling weights and robust design make the dataset a reliable foundation for studying wage income and its associated factors. 
+Despite its robust sampling methodology and extensive coverage, the ACS data has some inherent limitations. Variables such as income and work hours rely heavily on self-reported responses. This introduces potential inaccuracies due to recall bias, rounding errors, or deliberate misreporting. For individuals with irregular or multiple income sources, questions about wages or hours worked may be interpreted differently, further increasing measurement errors.
 
-## Dataset Description
-
-
-```{r}
-#| echo: false
-#| eval: true
-#| label: tbl-datasummary
-#| tbl-cap: "Cleaned Data Overview"
-#| warning: false
-#| results: asis
-
-# Ensure all categories of each categorical variable are displayed
-complete_data <- data %>%
-  group_by(education_level) %>%      
-  summarise_all(~ first(.)) %>%       # Ensure at least one row is displayed for each category
-  select(INCWAGE, UHRSWORK, everything())   
-
-kable(
-  complete_data, 
-  align = 'c',
-  format = "latex"
-) %>%
-  kable_styling(
-    latex_options = "scale_down",  
-    full_width = FALSE
-  ) %>%
-  column_spec(1, width = "3cm")          
-```
+To address these issues, the ACS uses data validation checks and imputation techniques to handle incomplete or inconsistent responses. However, these methods cannot fully eliminate the risk of bias or error. Even with these limitations, the ACS dataset remains a reliable and widely used resource for studying wage income and related factors. Its combination of sampling weights, large sample size, and rigorous design framework supports robust analysis.
 
 
-The sample of the cleaned dataset is shown in @tbl-datasummary, including the following variables. UHRSWORK and INCWAGE are retained from the raw data, while the other variables are newly constructed. During the data cleaning process, only individuals aged 18-65 and those with an employment status of "Employed" were included. This ensures the dataset focuses on studying the wage determinants of the employed labor force. Below is a description of each variable and how it was constructed:
-
-- **UHRSWORK**: Reports the number of hours per week the respondent usually worked if they were employed during the reference period. 
-
-- **INCWAGE**: Represents each respondent's total pre-tax wage and salary income earned as an employee during the previous year.
-
-
-- **education_level**: Derived from the EDUC variable, which indicates respondents' educational attainment as measured by the highest year of school or degree completed. It is grouped into five categories: Below High School (includes all levels below high school), High School (completed grade 12), Some College (completed 1-2 years of college), Bachelor’s Degree (completed 4 years of college), and Above Bachelor (more than 5 years of higher education).
-
-- **age**: Filtered from the AGE variable to include only respondents aged 18 to 65. This variable records the respondent’s age in years as of their last birthday.
-
-- **region**: Constructed from the STATEFIP variable to represent geographic regions. Valid state codes (1–56) were grouped into four traditional U.S. regions: Northeast, Midwest, South, and West. Each state was assigned to its corresponding region for further regional analysis.
-
-- **gender**: Based on the SEX variable, with original codes recoded as “Male” and “Female.”
-
-- **race_group**: Constructed from the RACE variable and grouped into four categories: White, Black, Asian, and Other. White and Black remain consistent with the original classifications. Asian includes Chinese, Japanese, and Other Asian categories, while Other includes all other races and mixed-race groups.
-
-
-
-
-
-## Data Results1
+## Data Results
 
 
 
@@ -369,9 +323,11 @@ plot4
 
 @fig-combined-visualizations examines the relationship between income, work hours, and age, incorporating both individual-level data and aggregated trends.
 
-Chart (a) is a scatter plot of work hours versus income, with each point representing an individual. The red quadratic regression line indicates a positive correlation between income and work hours, where longer hours generally lead to higher income. However, the regression line primarily reflects a linear trend, suggesting a stable relationship between income and work hours without significant signs of deceleration. Additionally, income variability increases with longer work hours, particularly beyond 50 hours per week, where fluctuations become more pronounced. Chart (b) illustrates the relationship between work hours and average income. While income generally increases with work hours, especially between 20 and 50 hours per week, it becomes unstable beyond 50 hours.
+Chart (a) visualizes the relationship between work hours and income, where the red quadratic regression line indicates a positive correlation. Longer work hours generally correspond to higher income, with the regression line reflecting a stable linear trend rather than noticeable deceleration. Income variability increases with longer work hours, particularly beyond 50 hours per week, where fluctuations become more pronounced. Chart (b) represents the trend of average income by work hours. Income shows a steady increase with work hours, especially between 20 and 50 hours per week, but becomes less consistent beyond 50 hours.
 
-Chart (c) is a scatter plot of age versus income, with the red quadratic regression line showing that income increases with age before eventually declining. Chart (d) depicts the trend of average income by age. The line chart shows that average income steadily rises with age, peaking in the late 40s and early 50s, and gradually declines as individuals approach retirement age.
+Chart (c) illustrates the relationship between age and income, with the red quadratic regression line highlighting a pattern where income rises with age before gradually declining. Chart (d) presents average income by age as a line chart. It shows that average income steadily increases with age, peaking in the late 40s and early 50s, followed by a gradual decline as individuals approach retirement age.
+
+
 
 
 
@@ -417,12 +373,11 @@ ggplot(heatmap_data, aes(Var2, Var1, fill = value)) +
 
 ```
 
-@fig-Education-Race illustrates the proportion of different education levels across racial groups. The horizontal axis represents racial groups, including "Asian," "Black," "White," and "Other," while the vertical axis represents education levels, ranging from "Below High School" to "Above Bachelor." The intensity of blue indicates the proportion, with darker shades representing higher values.
+@fig-Education-Race illustrates the proportion of different education levels across racial groups. The intensity of blue indicates the proportion, with darker shades representing higher values.
 
 Among Asians, the proportion of highly educated individuals is relatively high, with 38% holding a bachelor's degree and 30% having education beyond a bachelor's degree, while the proportion of those with "Below High School" education is 0%. In the Black group, "High School" accounts for the largest proportion at 32%, followed by "Some College" at 27%, while those with "Above Bachelor" degrees make up only 16%. In the White group, "High School" accounts for 29%, with 27% holding a bachelor's degree and 24% having "Some College" education, while 17% have "Above Bachelor" degrees. Among the "Other" group, 40% have a "High School" education, 25% have "Some College," 17% hold a bachelor's degree, and only 9% have "Above Bachelor" degrees.
 
-Overall, the distribution of education levels varies across racial groups. Asians have a higher proportion of highly educated individuals compared to other groups, while "High School" education is more prevalent among Black and "Other" groups. This reflects the complex relationship between race and educational background.
-
+Educational attainment shows significant variation across racial groups, reflecting the complex relationship between race and educational background. Asians have the highest levels of education, with a strong representation in bachelor's and advanced degrees. In contrast, Black and White groups display a broader distribution, with high school education being more common. The "Other" category, encompassing smaller racial groups and mixed-race individuals, stands out with a concentration at the high school level and lower representation in higher education, suggesting potential socio-economic and cultural disparities.
 
 
 # Model {#sec-model}
@@ -543,48 +498,50 @@ The evaluation of the final model's performance was conducted on both training a
 ### Model Results
 
 
+
 ```{r}
 #| echo: false
 #| eval: true
-#| label: tbl-modelresults
-#| tbl-cap: "Estimated coefficients of the final model"
+#| label: fig-coefficients
+#| fig-cap: "Predictor Coefficients with Confidence Intervals"
 #| warning: false
-#| results: asis
 
 
-# Prepare data: Extract model coefficients and confidence intervals
-model_summary <- data.frame(
-  Coefficients = coef(final_model),                
-  `Lower CI` = confint(final_model)[, 1],
-  `Upper CI` = confint(final_model)[, 2]
+# Extract data from the model
+model_data <- modelplot(
+  final_model,
+  conf_level = 0.95,  
+  draw = FALSE        
 )
 
-# Generate table using knitr::kable
-kable(
-  model_summary,
-  format = "latex",        
-  digits = 4              
-)
+# Filter out the Intercept
+filtered_data <- model_data[model_data$term != "(Intercept)", ]
+
+# Create a coefficient plot without Intercept
+ggplot(filtered_data, aes(x = estimate, y = term)) +
+  geom_point(size = 2, color = "blue") +              
+  geom_errorbarh(aes(xmin = conf.low, xmax = conf.high), 
+                 height = 0.2, color = "darkgray") +
+  theme_minimal() +                                   
+  labs(
+    x = "Coefficient Estimate",
+    y = "Predictors"
+  )
+
 
 
 ```
 
-@tbl-modelresults presents the effects of weekly working hours, age, region, education level, gender, and racial group on log income, along with their 95% confidence intervals. The estimated coefficients indicate varying degrees of influence among these factors.
 
-Education level has the strongest impact on income. Compared to those with a high school education (the reference group), individuals with education beyond a bachelor’s degree have a coefficient of 1.084, showing a significant increase in income. Similarly, those with a bachelor’s degree and some college education have coefficients of 0.8713 and 0.5094, respectively, suggesting higher education correlates with higher income.
+@fig-coefficients shows the effects of weekly working hours, age, region, education level, gender, and racial group on income. The coefficient plot also displays the 95% confidence intervals for each coefficient, with detailed numerical values presented in @tbl-modelresults in @sec-model-details. 
 
-Age and its quadratic term reveal a nonlinear relationship. The positive coefficient for age (0.0985) indicates income increases with age. However, the negative coefficient for the quadratic term (-0.0010) shows this growth slows over time, eventually declining. This pattern reflects typical career income trajectories, with rapid growth early on, stability in middle age, and potential decreases later in life.
+Education level is the most important factor. Individuals with lower education, such as "Below High School," have negative coefficients, while those with higher education, such as a "Bachelor’s" degree, show positive coefficients. This highlights the significant economic benefits of higher education. However, the confidence intervals for education vary. For example, "Below High School" has a wider interval, indicating greater uncertainty in the estimate.
 
-Gender also plays a significant role. Male income is significantly higher than female income, with a coefficient of 0.2632, even after controlling for other factors.
+Age also has a strong impact on income. The positive coefficient for age shows that income increases as people get older. However, the negative coefficient for age squared suggests that this growth slows over time and may decline later in life. The confidence interval for age is narrow, indicating a precise estimate. Gender differences are also evident. Male individuals have significantly higher income, as shown by the positive coefficient for gender. The narrow confidence interval for gender confirms the reliability of this effect.
 
-The effect of region varies. Compared to the Midwest (reference group), incomes in the West and Northeast are higher, with coefficients of 0.1560 and 0.1287. The coefficient for the South is -0.0192, close to zero, indicating little difference. This may relate to regional economic conditions and policies.
+Racial and ethnic factors present more complex dynamics. For example, "Black" and "Other" groups have negative coefficients and wider confidence intervals, reflecting greater uncertainty in their effects. In contrast, "White" individuals have coefficients close to zero and narrow intervals, showing minimal differences from the reference group. Regional effects are also notable. The "West" has positive coefficients compared to the reference region, while other regions show smaller or slightly negative effects. Some regional variables have confidence intervals that include zero, suggesting these effects may not be statistically significant.
 
-Weekly working hours show a modest effect on income, with a coefficient of 0.040. While longer hours increase income, the impact is relatively small, potentially due to wage structures and overtime policies.
-
-The effects of racial group are more complex. Compared to Asian individuals (reference group), income for Black and "Other" racial groups is notably lower, with coefficients of -0.1014 and -0.1290. The coefficient for White individuals is nearly zero (-0.0007), indicating no significant difference. These patterns reflect complexities in racial income disparities.
-
-In summary, education level has the largest influence on income, followed by age and gender. Region and racial group also play roles, while the effect of weekly working hours is smaller. These results provide a clear picture of how socioeconomic factors affect income and offer important context for further research and policymaking.
-
+Finally, the effect of weekly working hours on income is relatively small but still positive. Its narrow confidence interval indicates a stable and reliable estimate. Overall, these results provide a clear understanding of the socioeconomic factors influencing income and offer valuable insights for future research and policy discussions.
 
 
 
@@ -629,6 +586,55 @@ The model also has limitations. With fewer variables, it cannot fully explain th
 \appendix
 
 # Appendix  {#sec-appendix}
+
+## Dataset Description {#sec-data}
+
+```{r}
+#| echo: false
+#| eval: true
+#| label: tbl-datasummary
+#| tbl-cap: "Cleaned Data Overview"
+#| warning: false
+#| results: asis
+
+# Ensure all categories of each categorical variable are displayed
+complete_data <- data %>%
+  group_by(education_level) %>%      
+  summarise_all(~ first(.)) %>%       # Ensure at least one row is displayed for each category
+  select(INCWAGE, UHRSWORK, everything())   
+
+kable(
+  complete_data, 
+  align = 'c',
+  format = "latex"
+) %>%
+  kable_styling(
+    latex_options = "scale_down",  
+    full_width = FALSE
+  ) %>%
+  column_spec(1, width = "3cm")  
+```
+
+
+The sample of the cleaned dataset is shown in @tbl-datasummary, including the following variables. UHRSWORK and INCWAGE are retained from the raw data, while the other variables are newly constructed. During the data cleaning process, only individuals aged 18-65 and those with an employment status of "Employed" were included. This ensures the dataset focuses on studying the wage determinants of the employed labor force. Below is a description of each variable and how it was constructed:
+
+- **UHRSWORK**: Reports the number of hours per week the respondent usually worked if they were employed during the reference period. 
+
+- **INCWAGE**: Represents each respondent's total pre-tax wage and salary income earned as an employee during the previous year.
+
+
+- **education_level**: Derived from the EDUC variable, which indicates respondents' educational attainment as measured by the highest year of school or degree completed. It is grouped into five categories: Below High School (includes all levels below high school), High School (completed grade 12), Some College (completed 1-2 years of college), Bachelor’s Degree (completed 4 years of college), and Above Bachelor (more than 5 years of higher education).
+
+- **age**: Filtered from the AGE variable to include only respondents aged 18 to 65. This variable records the respondent’s age in years as of their last birthday.
+
+- **region**: Constructed from the STATEFIP variable to represent geographic regions. Valid state codes (1–56) were grouped into four traditional U.S. regions: Northeast, Midwest, South, and West. Each state was assigned to its corresponding region for further regional analysis.
+
+- **gender**: Based on the SEX variable, with original codes recoded as “Male” and “Female.”
+
+- **race_group**: Constructed from the RACE variable and grouped into four categories: White, Black, Asian, and Other. White and Black remain consistent with the original classifications. Asian includes Chinese, Japanese, and Other Asian categories, while Other includes all other races and mixed-race groups.
+
+
+
 
 
 ## Model Details {#sec-model-details}
@@ -724,6 +730,32 @@ residuals_leverage
 ```
 
 The model assumptions were checked using @fig-check. First, the Residuals vs Fitted plot tests the linearity assumption, showing that residuals are randomly scattered around the fitted values without any clear pattern, indicating that the linear relationship is valid. Second, the Normal Q-Q plot checks for the normality of residuals. Most points align closely with the diagonal line, suggesting the residuals are approximately normally distributed, with only slight deviations at the tails. Third, the Scale-Location plot evaluates homoskedasticity, and the red line remains mostly flat, suggesting that the variance of the residuals is fairly consistent. Finally, the Residuals vs Leverage plot identifies potential outliers or high-leverage points, indirectly testing the independence of errors and the independence of variables. Most points have low leverage, with only a few high-leverage points that may need attention. Overall, the assumptions are largely met, though there are some limitations that could be addressed with further refinements in the analysis.
+
+
+```{r}
+#| echo: false
+#| eval: true
+#| label: tbl-modelresults
+#| tbl-cap: "Estimated coefficients of the final model"
+#| warning: false
+#| results: asis
+
+
+# Prepare data: Extract model coefficients and confidence intervals
+model_summary <- data.frame(
+  Coefficients = coef(final_model),                
+  `Lower CI` = confint(final_model)[, 1],
+  `Upper CI` = confint(final_model)[, 2]
+)
+
+# Generate table using knitr::kable
+kable(
+  model_summary,
+  format = "latex",        
+  digits = 4              
+)
+```
+
 
 
 ## Idealized Methodology
