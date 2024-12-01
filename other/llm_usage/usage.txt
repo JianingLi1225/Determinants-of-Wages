@@ -1525,12 +1525,10 @@ First row: Race pie chart + Race bar chart.
 Second row: Gender pie chart + Gender bar chart.
 Run this code to generate four neatly arranged charts with clear information. Let me know if further adjustments are needed!
 User
-可以让四个图放在一起吗？我想仿照这个，画性别的饼状图和各个性别平均工资的柱状图
-
+Is it possible to have the four graphs put together? I'd like to model it after this and draw pie charts for gender and bar charts for average wages for each gender
 
 ChatGPT
-当然可以，将两个种族图表和两个性别图表组合在一起，总共四个图放在一行或两行排列。以下是实现四个图的代码：
-
+Of course you can, by combining the two race charts and the two gender charts, for a total of four charts arranged in one or two rows. Here is the code to implement the four charts:
 r
 复制代码
 #| echo: false

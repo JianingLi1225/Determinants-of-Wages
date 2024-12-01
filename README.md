@@ -1,4 +1,4 @@
-# Analysing the factors influencing the wages of the US workforce: Education as the Strongest Factor While Gender and Race Reflect Inequalities
+# Analysing the Factors Influencing the Wages of the US Workforce in 2023: Higher Education and Male Gender as Key Determinants of Wage Increases Controlling for Region and Race
 
 ## Overview
 
@@ -10,7 +10,7 @@ The repo is structured as:
 
 -   `data/00-simulated_data` contains the raw data as obtained from X.
 -   `data/01-analysis_data` contains the cleaned dataset that was constructed.
--   `model` Contains fitted models, along with the training and testing data used for the models.
+-   `model` contains fitted models, along with the training and testing data used for the models.
 -   `other` contains relevant datasheet, literature, details about LLM chat interactions, and sketches.
 -   `paper` contains the files used to generate the paper, including the Quarto document and reference bibliography file, as well as the PDF of the paper. 
 -   `scripts` contains R scripts for data simulation, cleaning, and testing, along with steps for data downloading.
@@ -18,4 +18,4 @@ The repo is structured as:
 ## Statement on LLM usage
 
  
-Some of the code was completed with the assistance of ChatGPT-4, including code for data cleaning, testing, simulation, generating charts for the Data section, parts of the code in the Model section, code for testing model assumptions in the appendix, and code for presenting model results. The entire chat history is available in inputs/llms/usage.txt.
+Some of the code was completed with the assistance of ChatGPT-4, including code for data cleaning, testing, simulation, generating charts for the Data section, parts of the code in the Model section, code for testing model assumptions in the appendix, and code for presenting model results. The Model Validation section incorporates key points referenced from ChatGPT-4.The entire chat history is available in other/llm_usage/usage.txt.

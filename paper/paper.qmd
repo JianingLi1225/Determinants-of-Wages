@@ -1,5 +1,5 @@
 ---
-title: "Analysing the factors influencing the wages of the US workforce"
+title: "Analysing the Factors Influencing the Wages of the US Workforce in 2023"
 subtitle: "Higher Education and Male Gender as Key Determinants of Wage Increases Controlling for Region and Race"
 author: 
   - Jianing Li
@@ -327,7 +327,6 @@ plot4
 Chart (a) visualizes the relationship between work hours and income, where the red quadratic regression line indicates a positive correlation. Longer work hours generally correspond to higher income, with the regression line reflecting a stable linear trend rather than noticeable deceleration. Income variability increases with longer work hours, particularly beyond 50 hours per week, where fluctuations become more pronounced. Chart (b) represents the trend of average income by work hours. Income shows a steady increase with work hours, especially between 20 and 50 hours per week, but becomes less consistent beyond 50 hours.
 
 Chart (c) illustrates the relationship between age and income, with the red quadratic regression line highlighting a pattern where income rises with age before gradually declining. Chart (d) presents average income by age as a line chart. It shows that average income steadily increases with age, peaking in the late 40s and early 50s, followed by a gradual decline as individuals approach retirement age.
-
 
 
 
