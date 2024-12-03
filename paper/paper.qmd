@@ -6,7 +6,7 @@ author:
 thanks: "Code and data are available at: https://github.com/JianingLi1225/Determinants-of-Wages.git"
 date: today
 date-format: long
-abstract: "This study uses a multiple linear regression model to analyze key factors influencing wages among the U.S. workforce, including education, age, gender, race, region, and hours worked. The results show that education is the strongest factor, with bachelor’s degree holders earning nearly 50% more than those without a high school diploma, while men earn more than women, and Asian workers have the highest earnings among racial groups. The study also finds a nonlinear relationship between age and wages, with region and hours worked playing smaller but significant roles. By identifying these drivers, the research provides evidence to inform policies aimed at reducing wage gaps and promoting fairer economic outcomes."
+abstract: "This study uses a multiple linear regression model to analyze key factors influencing wages among the U.S. workforce, including education, age, gender, race, region, and hours worked. The results show that education is the strongest factor, with individuals holding a bachelor’s degree earning over twice as much as those without a high school diploma, while men earn more than women, and Asian workers have the highest earnings among racial groups. The study also finds a nonlinear relationship between age and wages, with region and hours worked playing smaller but significant roles. By identifying these drivers, the research provides evidence to inform policies aimed at reducing wage gaps and promoting fairer economic outcomes."
 format: pdf
 number-sections: true
 toc: true
@@ -250,8 +250,7 @@ Chart (c) presents the racial composition, with White individuals forming the la
 
 Chart (e) shows the regional distribution. The West represents the largest share at 29%, followed by the Northeast (26.6%), the South (24.1%), and the Midwest (20.3%). Chart (f) indicates that the Midwest has the lowest average income at $62,046, while the Northeast has the highest at $78,138. The South and West have average incomes of $66,954 and $75,293, respectively.
 
-Chart (g) shows education levels: 16.5% of the population has less than a high school education, 30.4% has completed high school, 23.5% has some college education, 26.2% holds a bachelor’s degree, and 9.5% has education beyond a bachelor’s degree. Chart (h) highlights the connection between education and income. Those with less than a high school education earn $36,149 on average, while individuals with a bachelor’s degree or higher earn $87,465 and $124,144, respectively. Income increases steadily with higher levels of education.
-
+Chart (g) illustrates the distribution of education levels: 16.5% of the population has less than a high school education, 30.4% has completed high school, 23.5% has some college education, 26.2% holds a bachelor’s degree, and 9.5% has education beyond a bachelor’s degree. Chart (h) highlights the strong relationship between education and income. Those with less than a high school education earn an average of $36,149, while individuals with a bachelor’s degree earn $87,465, which is approximately 2.4 times higher. Income continues to increase for those with education beyond a bachelor’s degree, averaging $124,144, further underscoring the significant impact of education on earnings.
 
 
 ```{r}
