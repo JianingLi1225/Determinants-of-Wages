@@ -8,7 +8,7 @@ This study uses a multiple linear regression model to analyze key factors influe
 
 The repo is structured as:
 
--   `data/00-simulated_data` contains the raw data as obtained from X.
+-   `data/00-simulated_data` contains the simulated dataset.
 -   `data/01-analysis_data` contains the cleaned dataset that was constructed.
 -   `model` contains fitted models, along with the training and testing data used for the models.
 -   `other` contains relevant datasheet, literature, details about LLM chat interactions, and sketches.
