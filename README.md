@@ -2,7 +2,7 @@
 
 ## Overview
 
-This study uses a multiple linear regression model to analyze key factors influencing wages among the U.S. workforce, including education, age, gender, race, region, and hours worked. The results show that education is the strongest factor, with higher levels of education leading to significantly higher wages, while gender and race reveal notable disparities, with men and Asian workers earning the most. The study also finds a nonlinear relationship between age and wages, with region and hours worked playing smaller but significant roles. By identifying these drivers, the research provides evidence to inform policies aimed at reducing wage gaps and promoting fairer economic outcomes.
+This study uses a multiple linear regression model to analyze key factors influencing wages among the U.S. workforce, including education, age, gender, race, region, and hours worked. The results show that education is the strongest factor, with bachelor’s degree holders earning nearly 50% more than those without a high school diploma, while men earn more than women, and Asian workers have the highest earnings among racial groups. The study also finds a nonlinear relationship between age and wages, with region and hours worked playing smaller but significant roles. By identifying these drivers, the research provides evidence to inform policies aimed at reducing wage gaps and promoting fairer economic outcomes.
 
 ## File Structure
 
@@ -17,5 +17,4 @@ The repo is structured as:
 
 ## Statement on LLM usage
 
- 
-Some of the code was completed with the assistance of ChatGPT-4, including code for data cleaning, testing, simulation, generating charts for the Data section, parts of the code in the Model section, code for testing model assumptions in the appendix, and code for presenting model results. The Model Validation section incorporates key points referenced from ChatGPT-4.The entire chat history is available in other/llm_usage/usage.txt.
+Some of the code, including data cleaning, testing, simulation, chart generation for the Data section, model-related code, testing model assumptions in the appendix, and presenting model results, was completed with assistance from ChatGPT-4, along with key points in the Model Validation section. The entire chat history is available in other/llm_usage/usage.txt.
