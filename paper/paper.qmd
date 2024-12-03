@@ -388,7 +388,7 @@ Here we briefly describe the multiple linear regression model used to investigat
 
 ## Model Set-up
 
-This study use Multiple Linear Regression (MLR) to model the relationship between income and various predictors, carried out with the `lm` function in R [@citeR]. The dataset is divided into training and testing sets using the `createDataPartition` function from the `caret` [@caret] package, with 60% allocated for model training and parameter estimation and 40% for testing to evaluate predictive performance. 
+This study use Multiple Linear Regression (MLR) to model the relationship between income and various predictors, carried out with the `lm` function in R [@citeR]. The dataset is divided into training and testing sets using the `createDataPartition` function from the `caret` package [@caret], with 60% allocated for model training and parameter estimation and 40% for testing to evaluate predictive performance. 
 
 Multiple regression models rely on several assumptions: linearity, meaning a linear relationship exists between independent and dependent variables; homoskedasticity, requiring constant error variance across predictors; independence of errors, meaning residuals are uncorrelated; normality, where residuals follow a normal distribution; and independence of independent variables, ensuring no significant multicollinearity. These assumptions are discussed in @sec-model-details and evaluated using the diagnostic plots shown in @fig-check.
 
